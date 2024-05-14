@@ -21,11 +21,11 @@ import java.util.Arrays;
 
 @Service
 public class EmailSenderService {
-    @Autowired
-    private JavaMailSender javaMailSender;
     private static final Logger logger = LoggerFactory.getLogger(EmailSenderService.class);
     @Value("${spring.mail.username}")
     String mailSenderUsername;
+    @Autowired
+    private JavaMailSender javaMailSender;
 
     public void sendSimpleEmail(String[] toEmail,
                                 String subject,
@@ -38,13 +38,14 @@ public class EmailSenderService {
         message.setSubject(subject);
         javaMailSender.send(message);
 
-        logger.info("Email is sent from user: " + mailSenderUsername + " to " + Arrays.toString(toEmail));
+        String emailAddresses = Arrays.toString(toEmail);
+        logger.info("Email is sent from user: {} to {}", mailSenderUsername, emailAddresses);
     }
 
-    public Resource sendAttachedEmail(String[] toEmail,
-                                      String subject,
-                                      String body,
-                                      String file
+    public void sendAttachedEmail(String[] toEmail,
+                                  String subject,
+                                  String body,
+                                  String file
     ) throws MessagingException, IOException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
@@ -59,9 +60,9 @@ public class EmailSenderService {
         mimeMessageHelper.addAttachment("Attachment.jpg", attachment);
 
         javaMailSender.send(message);
-        logger.info("Email with attachment is sent from user: " + mailSenderUsername + " to " + Arrays.toString(toEmail));
 
-        return attachment;
+        String emailAddresses = Arrays.toString(toEmail);
+        logger.info("Email with attachment is sent from user: {} to {}", mailSenderUsername, emailAddresses);
     }
 
 }

@@ -16,20 +16,23 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/mail")
 public class SendMailWithAttachmentController {
+    private static final Logger logger = LoggerFactory.getLogger(SendMailWithAttachmentController.class);
+    public static final String SUBJECT = "User notification with attachment";
+    public static final String BODY = "Get request for user with attachment is triggered!";
+    public static final String FILE = "src/main/resources/images/test.jpg";
+    private static final String LOGGER_MESSAGE = "Email to notify that the application has started running GET REQUEST email with attachment.";
+
     @Autowired
     private EmailSenderService emailSenderService;
-    private static final Logger logger = LoggerFactory.getLogger(SendMailWithAttachmentController.class);
-    private static final String body = "Get request for user with attachment is triggered!";
-    private static final String subject = "App is started";
-    private static final String file = "src/main/resources/images/test.jpg";
 
     @PostMapping("/sendEmailWithAttachment")
     public EmailTemplate sentEmailWithAttachment(@RequestParam(name = "user", required = true) String user) throws MessagingException, IOException {
 
-        emailSenderService.sendAttachedEmail(new String[]{user}, subject, body,file);
-        EmailTemplate emailTemplate = new EmailTemplate(new String[]{user}, subject, body);
+        emailSenderService.sendAttachedEmail(new String[]{user}, SUBJECT, BODY, FILE);
+        EmailTemplate emailTemplate = new EmailTemplate(new String[]{user}, SUBJECT, BODY);
 
-        logger.info("Email to notify that the application has started running GET REQUEST email with attachment.");
+        logger.info(LOGGER_MESSAGE);
         return emailTemplate;
     }
+
 }

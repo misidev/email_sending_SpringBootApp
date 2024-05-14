@@ -22,7 +22,6 @@ public class EmailTemplate {
         this.body = body;
     }
 
-
     public String[] getToEmail() {
         return toEmail;
     }

@@ -1,10 +1,13 @@
-package com.example.email_sending_spring_boot_app.model;
+package com.example.email_sending_spring_boot_app.small_tests.model;
 
+import com.example.email_sending_spring_boot_app.model.EmailTemplate;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class EmailTemplateTest {
+@SpringBootTest
+class EmailTemplateSmallTest {
 
     @Test
     void testSimpleEmail() {
@@ -26,7 +29,7 @@ class EmailTemplateTest {
         String[] emailAddress = {"milicasimovic77@yahoo.com"};
         String body = "This is test body for email!";
         String subject = "This is test subject of email!";
-        String file="This is test file!";
+        String file = "This is test file!";
 
         EmailTemplate emailTemplate = new EmailTemplate();
         emailTemplate.setToEmail(new String[]{"milicasimovic77@yahoo.com"});
