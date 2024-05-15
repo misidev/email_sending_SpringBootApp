@@ -22,14 +22,14 @@ password.
 2. **Two-Factor Authentication**: If using two-factor authentication, generate an app-specific password for your
    application.
 
-# Notify Application Start and Shutdown
+## Notify Application Start and Shutdown
 
-## Description
+### Description
 
 These methods trigger the sending of emails to notify one or more defined email addresses that the application is
 starting or shutting down.
 
-## Method 1: Notify on Application Start
+### Method 1: Notify on Application Start
 
 This method sends an email notification when the application starts running.
 
@@ -42,7 +42,7 @@ This method sends an email notification when the application starts running.
       logger.info(APP_STARTING);
   }
 
-## Method 2: Notify on Application Shutdown
+### Method 2: Notify on Application Shutdown
 
 This method sends an email notification when the application starts to shut down.
 
@@ -55,21 +55,21 @@ This method sends an email notification when the application starts to shut down
       logger.info(APP_SHUTDOWN);
   }
 
-## Parameters
+### Parameters
 
 - **EMAIL_LIST**: List of email addresses to notify.
 - **APP_STARTING_SUBJECT, APP_SHUTDOWN_SUBJECT**: Subject of the email notification.
 - **APP_STARTING_BODY, APP_SHUTDOWN_BODY**: Body content of the email notification.
 
-# SendMailWithAttachmentController
+## SendMailWithAttachmentController
 
-## Description
+### Description
 
 This controller handles requests related to sending emails with attachments.
 
-## Endpoints
+### Endpoints
 
-### Send Email with Attachment
+#### Send Email with Attachment
 
 - **URL**: `/api/mail/sendEmailWithAttachment`
 - **Method**: POST
@@ -104,14 +104,14 @@ This controller handles requests related to sending emails with attachments.
   - **Name**: SendMailWithAttachmentController
   - **Description**: Logs information about email sending operations.
 
-# SendSimpleMailController
+## SendSimpleMailController
 
-## Description
+### Description
 This controller handles requests related to sending simple emails.
 
-## Endpoints
+### Endpoints
 
-### Send Simple Email
+#### Send Simple Email
 - **URL**: `/api/mail/sendSimpleEmail`
 - **Method**: POST
 - **Description**: Sends a simple email to the specified user.
