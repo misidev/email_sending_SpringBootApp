@@ -90,7 +90,7 @@ This controller handles requests related to sending emails with attachments.
    "toEmail": [
      "user@example.com"
    ],
-   "subject": "User notification with attachment",
+   "subject": "Userjkhuh notification with attachment",
    "body": "Get request for user with attachment is triggered!",
    "file": null
   }
@@ -130,7 +130,7 @@ This controller handles requests related to sending simple emails.
    "toEmail": [
      "user@example.com"
    ],
-   "subject": "User notification",
+   "subject": "Userjkhuh notification",
    "body": "Get request for user is triggered!",
    "file": null
   }

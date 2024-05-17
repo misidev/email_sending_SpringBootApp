@@ -1,11 +1,13 @@
 package com.example.email_sending_spring_boot_app.controller;
 
-import com.example.email_sending_spring_boot_app.model.EmailTemplate;
+import com.example.email_sending_spring_boot_app.constants.ApplicationConstants;
+import com.example.email_sending_spring_boot_app.model.EmailTemplateResponse;
 import com.example.email_sending_spring_boot_app.service.EmailSenderService;
 import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,22 +19,36 @@ import java.io.IOException;
 @RequestMapping("/api/mail")
 public class SendMailWithAttachmentController {
     private static final Logger logger = LoggerFactory.getLogger(SendMailWithAttachmentController.class);
-    public static final String SUBJECT = "User notification with attachment";
-    public static final String BODY = "Get request for user with attachment is triggered!";
-    public static final String FILE = "src/main/resources/images/test.jpg";
-    private static final String LOGGER_MESSAGE = "Email to notify that the application has started running GET REQUEST email with attachment.";
-
+    private static EmailTemplateResponse emailTemplateResponse = null;
     @Autowired
     private EmailSenderService emailSenderService;
 
     @PostMapping("/sendEmailWithAttachment")
-    public EmailTemplate sentEmailWithAttachment(@RequestParam(name = "user", required = true) String user) throws MessagingException, IOException {
+    public EmailTemplateResponse sentEmailWithAttachment(@RequestParam(name = "user", required = true) String user) {
+        emailSenderService.sendAttachedEmail(new String[]{user},
+                ApplicationConstants.SUBJECT_FOR_MAIL_WITH_ATTACHMENT,
+                ApplicationConstants.BODY_FOR_MAIL_WITH_ATTACHMENT,
+                ApplicationConstants.FILE_FOR_MAIL_WITH_ATTACHMENT,null);
 
-        emailSenderService.sendAttachedEmail(new String[]{user}, SUBJECT, BODY, FILE);
-        EmailTemplate emailTemplate = new EmailTemplate(new String[]{user}, SUBJECT, BODY);
+        emailTemplateResponse = handleSuccessResponseAttachment(user);
 
-        logger.info(LOGGER_MESSAGE);
-        return emailTemplate;
+        logger.info(ApplicationConstants.LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
+        return emailTemplateResponse;
+    }
+
+    public static EmailTemplateResponse handleSuccessResponseAttachment(String user) {
+        EmailTemplateResponse.EmailTemplate emailTemplate = new EmailTemplateResponse.EmailTemplate(new String[]{user},
+                ApplicationConstants.SUBJECT_FOR_MAIL_WITH_ATTACHMENT,
+                ApplicationConstants.BODY_FOR_MAIL_WITH_ATTACHMENT,
+                ApplicationConstants.FILE_NAME);
+
+        emailTemplateResponse = new EmailTemplateResponse(
+                ApplicationConstants.STATUS_SUCCESS,
+                HttpStatus.OK,
+                emailTemplate,
+                ApplicationConstants.LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
+
+        return emailTemplateResponse;
     }
 
 }
