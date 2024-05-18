@@ -28,7 +28,8 @@ public class SendMailWithAttachmentController {
         emailSenderService.sendAttachedEmail(new String[]{user},
                 ApplicationConstants.SUBJECT_FOR_MAIL_WITH_ATTACHMENT,
                 ApplicationConstants.BODY_FOR_MAIL_WITH_ATTACHMENT,
-                ApplicationConstants.FILE_FOR_MAIL_WITH_ATTACHMENT,null);
+                ApplicationConstants.FILE_FOR_MAIL_WITH_ATTACHMENT);
+
 
         emailTemplateResponse = handleSuccessResponseAttachment(user);
 

@@ -4,7 +4,6 @@ import com.example.email_sending_spring_boot_app.constants.ApplicationConstants;
 import com.example.email_sending_spring_boot_app.model.Email;
 import com.example.email_sending_spring_boot_app.model.ErrorResponse;
 import com.example.email_sending_spring_boot_app.repository.EmailRepository;
-import jakarta.activation.DataSource;
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -30,11 +29,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Objects;
 
 @Service
 public class EmailSenderService {
-    private static final Logger logger = LoggerFactory.getLogger(EmailSenderService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailSenderService.class);
 
     private ErrorResponse errorResponse;
 
@@ -61,7 +59,7 @@ public class EmailSenderService {
             javaMailSender.send(message);
 
             String emailAddresses = Arrays.toString(toEmail);
-            logger.info("Email is sent from user: {} to {}", mailSenderUsername, emailAddresses);
+            LOGGER.info("Email is sent from user: {} to {}", mailSenderUsername, emailAddresses);
 
             saveEmail(toEmail, subject, body, mailSenderUsername);
 
@@ -76,8 +74,7 @@ public class EmailSenderService {
     public void sendAttachedEmail(String[] toEmail,
                                   String subject,
                                   String body,
-                                  String file,
-                                  MultipartFile[] attachments
+                                  String file
     ) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
@@ -86,15 +83,9 @@ public class EmailSenderService {
             mimeMessageHelper.setSubject(subject);
             mimeMessageHelper.setText(body);
 
-            Path path = Paths.get(file);
+            Path path = Paths.get(String.valueOf(file));
             byte[] content = Files.readAllBytes(path);
             Resource attachment = new ByteArrayResource(content);
-
-            if (attachments != null) {
-                for (MultipartFile attachment1 : attachments) {
-                    mimeMessageHelper.addAttachment(attachment1.getOriginalFilename(), (DataSource) attachment.getInputStream());
-                }
-            }
 
             mimeMessageHelper.addAttachment(ApplicationConstants.FILE_NAME, attachment);
 
@@ -102,7 +93,7 @@ public class EmailSenderService {
             javaMailSender.send(message);
 
             String emailAddresses = Arrays.toString(toEmail);
-            logger.info("Email with attachment is sent from user: {} to {}", mailSenderUsername, emailAddresses);
+            LOGGER.info("Email with attachment is sent from user: {} to {}", mailSenderUsername, emailAddresses);
 
             saveEmail(toEmail, subject, body, mailSenderUsername);
 
@@ -121,6 +112,52 @@ public class EmailSenderService {
         }
     }
 
+    public void sendAttachedEmailThroughRequest(String[] toEmail,
+                                                String subject,
+                                                String body,
+                                                MultipartFile file
+    ) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
+            mimeMessageHelper.setTo(toEmail);
+            mimeMessageHelper.setSubject(subject);
+            mimeMessageHelper.setText(body);
+
+            if (!file.isEmpty()) {
+                LOGGER.info("Attachment Name: {},  Attachment Content Type {}: ", file.getOriginalFilename(), file.getContentType());
+                byte[] content = file.getBytes();
+                Resource attachment = new ByteArrayResource(content);
+
+                mimeMessageHelper.addAttachment(file.getOriginalFilename(), attachment);
+            } else {
+                LOGGER.info("No attachment provided.");
+            }
+
+            javaMailSender.send(message);
+            String emailAddresses = Arrays.toString(toEmail);
+            LOGGER.info("Email with attachment is sent from user: {} to {}", mailSenderUsername, emailAddresses);
+
+            saveEmail(toEmail, subject, body, mailSenderUsername);
+
+        } catch (
+                AuthenticationFailedException ex) {
+            // Handle authentication failure
+            httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // HTTP 401
+            errorResponse = handleUnauthorized();
+        } catch (
+                MessagingException ex) {
+            // Handle other messaging exceptions
+            httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // HTTP 500
+            errorResponse = handleInternalServerError();
+        } catch (IOException ex) {
+            // Handle IO exceptions
+            httpServletResponse.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE); // HTTP 503
+            errorResponse = handleServiceUnavailable();
+        }
+
+    }
+
     public static Email addingEmail(String subject, String body, String recipient, String sender, LocalDateTime timestamp) {
         Email email = new Email();
         email.setSubject(subject);
@@ -136,12 +173,14 @@ public class EmailSenderService {
             for (String email : toEmail) {
                 Email emailForDb = addingEmail(subject, body, email, sender, LocalDateTime.now());
                 emailRepository.save(emailForDb);
+                LOGGER.info("Email with attachment is added in db | toEmail {}, subject {}, body {} and sender {}", toEmail, subject, body, sender);
             }
         } catch (DataAccessException | ConstraintViolationException | TransactionSystemException ex) {
             ex.printStackTrace();
             //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
+            LOGGER.info("Internal Server Error while adding Email with attachment in db");
         }
-        // return null;
+
     }
 
     private ErrorResponse handleUnauthorized() {

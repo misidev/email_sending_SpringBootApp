@@ -22,9 +22,9 @@ public class SendEmail {
     public EmailTemplateResponse sentEmail(@RequestParam(name = "user", required = true) String user,
                                            @RequestParam(name = "subject", required = true) String subject,
                                            @RequestParam(name = "body", required = true) String body,
-                                           @RequestBody(required = false) MultipartFile[] attachments) {
+                                           @RequestBody(required = false) MultipartFile attachments) {
 
-        emailSenderService.sendAttachedEmail(new String[]{user}, subject, body, null, attachments);
+        emailSenderService.sendAttachedEmailThroughRequest(new String[]{user}, subject, body, attachments);
 
         emailTemplateResponse = SendMailWithAttachmentController.handleSuccessResponseAttachment(user);
 

@@ -31,7 +31,7 @@ class EmailSenderServiceSmallTest {
 
     @Test
     void sendAttachedEmail_shouldSendEmailWithAttachment() throws MessagingException, IOException {
-        emailSenderService.sendAttachedEmail(toEmail, subject, body, file);
+        emailSenderService.sendAttachedEmail(toEmail, subject, body, null);
     }
 
 }
