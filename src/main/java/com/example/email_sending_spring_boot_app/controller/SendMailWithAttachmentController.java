@@ -3,7 +3,6 @@ package com.example.email_sending_spring_boot_app.controller;
 import com.example.email_sending_spring_boot_app.constants.ApplicationConstants;
 import com.example.email_sending_spring_boot_app.model.EmailTemplateResponse;
 import com.example.email_sending_spring_boot_app.service.EmailSenderService;
-import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/mail")

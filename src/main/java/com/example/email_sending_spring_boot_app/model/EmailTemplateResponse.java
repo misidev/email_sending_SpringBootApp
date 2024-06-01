@@ -2,6 +2,8 @@ package com.example.email_sending_spring_boot_app.model;
 
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
+
 public class EmailTemplateResponse {
     private String status;
     private HttpStatus code;
@@ -41,6 +43,16 @@ public class EmailTemplateResponse {
 
     public void setCode(HttpStatus code) {
         this.code = code;
+    }
+
+    @Override
+    public String toString() {
+        return "EmailTemplateResponse{" +
+                "status='" + status + '\'' +
+                ", code=" + code +
+                ", data=" + data +
+                ", message='" + message + '\'' +
+                '}';
     }
 
     public static class EmailTemplate {
@@ -97,5 +109,14 @@ public class EmailTemplateResponse {
             this.file = file;
         }
 
+        @Override
+        public String toString() {
+            return "EmailTemplate{" +
+                    "toEmail=" + Arrays.toString(toEmail) +
+                    ", subject='" + subject + '\'' +
+                    ", body='" + body + '\'' +
+                    ", file='" + file + '\'' +
+                    '}';
+        }
     }
 }

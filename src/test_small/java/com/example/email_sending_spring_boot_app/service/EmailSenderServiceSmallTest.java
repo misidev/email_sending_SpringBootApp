@@ -1,5 +1,6 @@
-package com.example.email_sending_spring_boot_app.small_tests.service;
+package com.example.email_sending_spring_boot_app.service;
 
+import com.example.email_sending_spring_boot_app.constants.ApplicationConstants;
 import com.example.email_sending_spring_boot_app.service.EmailSenderService;
 import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ class EmailSenderServiceSmallTest {
     @Mock
     private EmailSenderService emailSenderService;
 
-    String[] toEmail = {"milicasimovic77@yahoo.com"};
+    String[] toEmail = {ApplicationConstants.TEST_EMAIL};
     String subject = "Test Subject";
     String body = "Test Body";
     String file = "path/to/attachment.jpg";

@@ -12,7 +12,7 @@ public class EmailService {
     @Autowired
     private EmailRepository emailRepository;
 
-    public List<Email> getAllEmail() {
+    public List<Email> getAllEmails() {
         return emailRepository.findAll();
     }
 }

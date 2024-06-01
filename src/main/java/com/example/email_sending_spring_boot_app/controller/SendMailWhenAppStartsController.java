@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 //Email one or more defined email addresses to notify that the application has started running
 @RestController
 @RequestMapping("/api/mail")
-public class SendMailWhenAppStarts {
-    private static final Logger logger = LoggerFactory.getLogger(SendMailWhenAppStarts.class);
+public class SendMailWhenAppStartsController {
+    private static final Logger logger = LoggerFactory.getLogger(SendMailWhenAppStartsController.class);
     private EmailTemplateResponse emailTemplateResponse = null;
 
     protected static final String[] EMAIL_LIST = new String[]{"milicasimovic77@yahoo.com"};

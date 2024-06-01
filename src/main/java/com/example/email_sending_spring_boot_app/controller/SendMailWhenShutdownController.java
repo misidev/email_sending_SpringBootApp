@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 //Email one or more defined email addresses to notify that the application has started to shut down
 @RestController
 @RequestMapping("/api/mail")
-public class SendMailWhenShutdown {
-    private static final Logger logger = LoggerFactory.getLogger(SendMailWhenShutdown.class);
+public class SendMailWhenShutdownController {
+    private static final Logger logger = LoggerFactory.getLogger(SendMailWhenShutdownController.class);
     private EmailTemplateResponse emailTemplateResponse = null;
 
     protected static final String[] EMAIL_LIST = new String[]{"milicasimovic77@yahoo.com"};
