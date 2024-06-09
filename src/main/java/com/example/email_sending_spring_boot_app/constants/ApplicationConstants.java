@@ -8,18 +8,21 @@ public class ApplicationConstants {
         throw new AssertionError();
     }
 
-    public static final String SUBJECT_FOR_MAIL_WITH_ATTACHMENT = "User notification with attachment";
-    public static final String BODY_FOR_MAIL_WITH_ATTACHMENT = "Post request for user with attachment is triggered!";
     public static final String FILE_FOR_MAIL_WITH_ATTACHMENT = "src/main/resources/images/test.jpg";
+    public static final String SIGNATURE = "src/main/resources/images/misidev_signature.png";
     public static final String FILE_NAME = FILE_FOR_MAIL_WITH_ATTACHMENT.substring(FILE_FOR_MAIL_WITH_ATTACHMENT.lastIndexOf("/") + 1);
     public static final String LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT = "POST REQUEST email with attachment.";
 
     public static final String SUBJECT_FOR_SIMPLE_MAIL = "User notification";
     public static final String BODY_FOR_SIMPLE_MAIL = "Post request for user is triggered!";
     public static final String LOGGER_MESSAGE_FOR_SIMPLE_MAIL = "POST REQUEST simple email.";
+    public static final String LOGGER_MESSAGE_GET_ALL_EMAILS = "GET REQUEST for get all emails.";
+    public static final String LOGGER_MESSAGE_GET_ALL_USERS = "GET REQUEST for get all users.";
 
     public static final String APP_STARTING_SUBJECT = "App is started";
     public static final String APP_SHUTDOWN_SUBJECT = "App is shutting down!";
+    public static final String APP_STARTING_STATUS = "successfully started";
+    public static final String APP_SHUTDOWN_STATUS = "shut down";
     public static final String APP_STARTING_BODY = "App is successfully started!";
     public static final String APP_SHUTDOWN_BODY = "Shutdown of the app started!";
     public static final String APP_STARTING = "Email to notify that the application has started running";
@@ -39,7 +42,16 @@ public class ApplicationConstants {
 
 
     public static final String TEST_EMAIL = "milicasimovic77@yahoo.com";
-    public static final String[] TEST_EMAIL_LIST = new String[]{TEST_EMAIL};
+    public static final String TEMPLATE_START_SHUTDOWN = "email_app_status.html";
+    public static final String TEMPLATE_EMAIL = "email_template.html";
+    public static final String USER = "user";
+    public static final String SUBJECT = "subject";
+    public static final String BODY = "body";
+    public static final String FILE = "file";
+
+    public static final String SUBJECT_FOR_MAIL_WITH_ATTACHMENT = "User notification with attachment";
+    public static final String BODY_FOR_MAIL_WITH_ATTACHMENT = "Post request for user with attachment is triggered!";
+    public static final String[] EMAIL_LIST = new String[]{TEST_EMAIL};
     public static final String TEST_EMAIL_1 = "milicasimovic888@yahoo.com";
     public static final String TEST_SUBJECT = "Test subject";
     public static final String TEST_BODY = "Test body";
@@ -51,13 +63,31 @@ public class ApplicationConstants {
     public static final String TEST_USERNAME = "Username";
 
     public static final LocalDateTime TEST_TIMESTAMP = LocalDateTime.now();
-    public static final  Integer CODE_OK=206;
+    public static final Integer CODE_OK = 206;
 
     public static final String CODE_OK_RESPONSE = "\"code\":\"OK\",";
     public static final String STATUS_SUCCESS_RESPONSE = "{\"status\":\"success\",";
     public static final String DATA_RESPONSE = "\"data\":";
     public static final String EMAIL_TO_RESPONSE = "{\"toEmail\":[\"milicasimovic77@yahoo.com\"],";
     public static final String FILE_NULL_RESPONSE = "\"file\":null},";
+
+    public static final String TEST_REQUEST_BODY_ADD = "{\"username\":\"Milica8\", \"email\":\"milicasimovic77@yahoo.com\"}";
+
+    public static final String TEST_REQUEST_BODY_TEMPLATE =
+            "{\n" +
+                    "    \"toEmail\":[\"milicasimovc77@yahoo.com\"],\n" +
+                    "    \"subject\":\"Knowledge Transfer\",\n" +
+                    "    \"eventName\":\"Mastering Email Communication: Exploring the JavaMail API\",\n" +
+                    "    \"eventDate\":\"8. July 2024\",\n" +
+                    "    \"eventTime\":\"11:00\",\n" +
+                    "    \"eventLocation\":\"Online\",\n" +
+                    "    \"eventRegistrationLink\":\"event_registration_link.com\",\n" +
+                    "    \"recipientName\":\"Alex\",\n" +
+                    "    \"companyName\":\"misidev\",\n" +
+                    "    \"yourName\":\"Milica\",\n" +
+                    "    \"yourJobTitle\":\"Software Engineer\",\n" +
+                    "    \"signature\":\"src/main/resources/images/misidev_signature.png\"\n" +
+                    "}";
     public static final String TEST_SIMPLE_EMAIL = STATUS_SUCCESS_RESPONSE +
             CODE_OK_RESPONSE +
             DATA_RESPONSE +
@@ -72,7 +102,7 @@ public class ApplicationConstants {
             EMAIL_TO_RESPONSE +
             "\"subject\":\"User notification with attachment\"," +
             "\"body\":\"Post request for user with attachment is triggered!\"," +
-            "\"file\":\"test.jpg\"}," +
+            "\"file\":\"src/main/resources/images/test.jpg\"}," +
             "\"message\":\"POST REQUEST email with attachment.\"}";
 
     public static final String TEST_SHUTDOWN_EMAIL = STATUS_SUCCESS_RESPONSE +
@@ -81,7 +111,7 @@ public class ApplicationConstants {
             EMAIL_TO_RESPONSE +
             "\"subject\":\"App is shutting down!\"," +
             "\"body\":\"Shutdown of the app started!\"," +
-            FILE_NULL_RESPONSE +
+            "\"file\":\"src/main/resources/images/misidev_signature.png\"}," +
             "\"message\":\"Email to notify that the application has started to shut down\"}";
 
     public static final String TEST_APP_STARTS_EMAIL = STATUS_SUCCESS_RESPONSE +
@@ -90,15 +120,15 @@ public class ApplicationConstants {
             EMAIL_TO_RESPONSE +
             "\"subject\":\"App is started\"," +
             "\"body\":\"App is successfully started!\"," +
-            FILE_NULL_RESPONSE +
+            "\"file\":\"src/main/resources/images/misidev_signature.png\"}," +
             "\"message\":\"Email to notify that the application has started running\"}";
 
     public static final String TEST_EMAIL_RESPONSE = STATUS_SUCCESS_RESPONSE +
             CODE_OK_RESPONSE +
             DATA_RESPONSE +
             EMAIL_TO_RESPONSE +
-            "\"subject\":\"Test Subject\"," +
-            "\"body\":\"Test Body\"," +
+            "\"subject\":\"Test subject\"," +
+            "\"body\":\"Test body\"," +
             "\"file\":\"test.txt\"}," +
             "\"message\":\"POST REQUEST email with attachment.\"}";
 

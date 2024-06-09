@@ -1,34 +1,40 @@
 package com.example.email_sending_spring_boot_app.service;
 
-import com.example.email_sending_spring_boot_app.constants.ApplicationConstants;
-import com.example.email_sending_spring_boot_app.model.Email;
-import com.example.email_sending_spring_boot_app.model.ErrorResponse;
+import com.example.email_sending_spring_boot_app.model.entity.Email;
+import com.example.email_sending_spring_boot_app.model.request.EmailRequest;
+import com.example.email_sending_spring_boot_app.model.response.EmailResponse;
+import com.example.email_sending_spring_boot_app.model.response.ErrorResponse;
 import com.example.email_sending_spring_boot_app.repository.EmailRepository;
+import com.example.email_sending_spring_boot_app.util.HandleDbInputAndResponses;
+import com.lowagie.text.DocumentException;
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletResponse;
-import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.dao.DataAccessException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Base64;
+import java.util.Date;
+import java.util.List;
+
+import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.APP_STARTING_SUBJECT;
 
 @Service
 public class EmailSenderService {
@@ -38,84 +44,177 @@ public class EmailSenderService {
 
     @Value("${spring.mail.username}")
     String mailSenderUsername;
+
+    @Value("${spring.application.name}")
+    String applicationName;
     @Autowired
     private JavaMailSender javaMailSender;
 
+    private HttpServletResponse httpServletResponse;
+    @Autowired
+    HandleDbInputAndResponses handleDBInputAndResponses;
+
+    @Autowired
+    private TemplateEngine templateEngine;
+
+    private final Context context = new Context();
+
+    //for adding emails in db
     @Autowired
     private EmailRepository emailRepository;
 
-    private HttpServletResponse httpServletResponse;
+    private EmailResponse emailResponse = null;
 
-    public void sendSimpleEmail(String[] toEmail,
-                                String subject,
-                                String body
+
+    public EmailResponse sendEmailsWithoutAttachment(String[] toEmail,
+                                                     String subject,
+                                                     String body
     ) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(mailSenderUsername);
             message.setTo(toEmail);
-            message.setText(body);
             message.setSubject(subject);
+            message.setText(body);
             javaMailSender.send(message);
 
             String emailAddresses = Arrays.toString(toEmail);
             LOGGER.info("Email is sent from user: {} to {}", mailSenderUsername, emailAddresses);
 
-            saveEmail(toEmail, subject, body, mailSenderUsername);
+            emailResponse = handleDBInputAndResponses.handleSuccessResponseSimple(Arrays.toString(toEmail));
 
+            handleDBInputAndResponses.saveEmails(toEmail, subject, body, mailSenderUsername);
         } catch (Exception ex) {
             // Handle mail sending exceptions
             ex.printStackTrace();
-            httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // HTTP 500
-            errorResponse = handleInternalServerError();
+            errorResponse = handleDBInputAndResponses.handleInternalServerError();// HTTP 500
+        }
+        return emailResponse;
+    }
+
+
+    public EmailResponse sendEmailsAppStartsShutdown(String[] toEmails,
+                                                     String subject,
+                                                     String applicationStatus,
+                                                     String template,
+                                                     Date currentDateAndTime,
+                                                     String signature) throws IOException, DocumentException {
+
+        for (String toEmail : toEmails) {
+            // Create a Thymeleaf context for each email
+            context.setVariable("user", toEmail);
+            context.setVariable("appName", applicationName);
+            context.setVariable("appId", "testAppId888");
+            context.setVariable("date", currentDateAndTime);
+            context.setVariable("environment", "dev");
+            context.setVariable("applicationStatus", applicationStatus);
+
+            addSignature(signature);
+
+            String htmlContent = templateEngine.process(template, context);
+            String filePdf = handleDBInputAndResponses.generatePdf(applicationName, "testAppId888", applicationStatus, String.valueOf(currentDateAndTime), "dev");
+
+            // Send the email
+            emailResponse = sendAttachedEmail(toEmail, subject, null, filePdf, htmlContent, template);
+        }
+
+        return emailResponse;
+    }
+
+    public void sendEmailsTemplate(EmailRequest emailRequest, String template) throws IOException {
+        for (String toEmail : emailRequest.getToEmail()) {
+
+            context.setVariable("eventName", emailRequest.getEventName());
+            context.setVariable("eventDate", emailRequest.getEventDate());
+            context.setVariable("eventTime", emailRequest.getEventTime());
+            context.setVariable("eventLocation", emailRequest.getEventLocation());
+            context.setVariable("eventRegistrationLink", emailRequest.getEventRegistrationLink());
+            context.setVariable("recipientName", emailRequest.getRecipientName());
+            context.setVariable("companyName", emailRequest.getCompanyName());
+            context.setVariable("yourName", emailRequest.getYourName());
+            context.setVariable("yourJobTitle", emailRequest.getYourJobTitle());
+
+            addSignature(emailRequest.getSignature());
+
+            String htmlContent = templateEngine.process(template, context);
+
+            sendAttachedEmail(toEmail, emailRequest.getSubject(), null, null, htmlContent, template);
+        }
+
+    }
+
+    public void addSignature(String signature) throws IOException {
+        if (signature != null) {
+            Path path = Paths.get(signature);
+            byte[] content = Files.readAllBytes(path);
+
+            String base64Content = Base64.getEncoder().encodeToString(content);
+            String dataUrl = "data:image/png;base64," + base64Content;
+
+            context.setVariable("signature", dataUrl);
         }
     }
 
-    public void sendAttachedEmail(String[] toEmail,
-                                  String subject,
-                                  String body,
-                                  String file
-    ) {
+
+    public EmailResponse sendAttachedEmail(String toEmail,
+                                           String subject,
+                                           String body,
+                                           String file,
+                                           String emailContent,
+                                           String template) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
             mimeMessageHelper.setTo(toEmail);
             mimeMessageHelper.setSubject(subject);
-            mimeMessageHelper.setText(body);
 
-            Path path = Paths.get(String.valueOf(file));
-            byte[] content = Files.readAllBytes(path);
-            Resource attachment = new ByteArrayResource(content);
+            if (body != null) {
+                mimeMessageHelper.setText(body);
+            }
+            if (emailContent != null) {
+                mimeMessageHelper.setText(emailContent, true);
+            }
 
-            mimeMessageHelper.addAttachment(ApplicationConstants.FILE_NAME, attachment);
+            if (file != null) {
+                Path path = Paths.get(file);
+                byte[] content = Files.readAllBytes(path);
+                Resource attachment = new ByteArrayResource(content);
 
+                String attachmentName = file.substring(file.lastIndexOf("/") + 1);
+
+                mimeMessageHelper.addAttachment(attachmentName, attachment);
+            }
 
             javaMailSender.send(message);
 
-            String emailAddresses = Arrays.toString(toEmail);
-            LOGGER.info("Email with attachment is sent from user: {} to {}", mailSenderUsername, emailAddresses);
+            if (template != null) {
+                emailResponse = handleDBInputAndResponses.handleSuccessResponseAttachment(toEmail, subject, body, file);
+            } else if (subject.equals(APP_STARTING_SUBJECT)) {
+                emailResponse = handleDBInputAndResponses.handleSuccessResponseAppStarts();
+            } else {
+                emailResponse = handleDBInputAndResponses.handleSuccessResponseShutdown();
+            }
 
-            saveEmail(toEmail, subject, body, mailSenderUsername);
 
+            LOGGER.info("Email with attachment is sent from user: {} to {}", mailSenderUsername, toEmail);
+
+            handleDBInputAndResponses.saveEmail(toEmail, subject, template, mailSenderUsername);
         } catch (AuthenticationFailedException ex) {
             // Handle authentication failure
-            httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // HTTP 401
-            errorResponse = handleUnauthorized();
+            errorResponse = handleDBInputAndResponses.handleUnauthorized();// HTTP 401
         } catch (MessagingException ex) {
             // Handle other messaging exceptions
-            httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // HTTP 500
-            errorResponse = handleInternalServerError();
+            errorResponse = handleDBInputAndResponses.handleInternalServerError();// HTTP 500
         } catch (IOException ex) {
-            // Handle IO exceptions
-            httpServletResponse.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE); // HTTP 503
-            errorResponse = handleServiceUnavailable();
+            errorResponse = handleDBInputAndResponses.handleServiceUnavailable();// HTTP 503
         }
+        return emailResponse;
     }
 
-    public void sendAttachedEmailThroughRequest(String[] toEmail,
-                                                String subject,
-                                                String body,
-                                                MultipartFile file
+    public EmailResponse sendAttachedEmailThroughRequest(String[] toEmail,
+                                                         String subject,
+                                                         String body,
+                                                         MultipartFile file
     ) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
@@ -124,7 +223,7 @@ public class EmailSenderService {
             mimeMessageHelper.setSubject(subject);
             mimeMessageHelper.setText(body);
 
-            if (!file.isEmpty()) {
+            if (file != null) {
                 LOGGER.info("Attachment Name: {},  Attachment Content Type {}: ", file.getOriginalFilename(), file.getContentType());
                 byte[] content = file.getBytes();
                 Resource attachment = new ByteArrayResource(content);
@@ -138,85 +237,25 @@ public class EmailSenderService {
             String emailAddresses = Arrays.toString(toEmail);
             LOGGER.info("Email with attachment is sent from user: {} to {}", mailSenderUsername, emailAddresses);
 
-            saveEmail(toEmail, subject, body, mailSenderUsername);
+            emailResponse = handleDBInputAndResponses.handleSuccessResponseMultipartFile(Arrays.toString(toEmail), subject, body, file);
 
-        } catch (
-                AuthenticationFailedException ex) {
+            handleDBInputAndResponses.saveEmails(toEmail, subject, body, mailSenderUsername);
+        } catch (AuthenticationFailedException ex) {
             // Handle authentication failure
-            httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // HTTP 401
-            errorResponse = handleUnauthorized();
-        } catch (
-                MessagingException ex) {
+            errorResponse = handleDBInputAndResponses.handleUnauthorized();// HTTP 401
+        } catch (MessagingException ex) {
             // Handle other messaging exceptions
-            httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // HTTP 500
-            errorResponse = handleInternalServerError();
+            errorResponse = handleDBInputAndResponses.handleInternalServerError(); // HTTP 500
         } catch (IOException ex) {
             // Handle IO exceptions
-            httpServletResponse.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE); // HTTP 503
-            errorResponse = handleServiceUnavailable();
+            errorResponse = handleDBInputAndResponses.handleServiceUnavailable(); // HTTP 503
         }
 
+        return emailResponse;
     }
 
-    public static Email addingEmail(String subject, String body, String recipient, String sender, LocalDateTime timestamp) {
-        Email email = new Email();
-        email.setSubject(subject);
-        email.setBody(body);
-        email.setRecipient(recipient);
-        email.setSender(sender);
-        email.setTimestamp(timestamp);
-        return email;
-    }
-
-    public void saveEmail(String[] toEmail, String subject, String body, String sender) {
-        try {
-            for (String email : toEmail) {
-                Email emailForDb = addingEmail(subject, body, email, sender, LocalDateTime.now());
-                emailRepository.save(emailForDb);
-                LOGGER.info("Email with attachment is added in db | toEmail {}, subject {}, body {} and sender {}", toEmail, subject, body, sender);
-            }
-        } catch (DataAccessException | ConstraintViolationException | TransactionSystemException ex) {
-            ex.printStackTrace();
-            //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
-            LOGGER.info("Internal Server Error while adding Email with attachment in db");
-        }
-
-    }
-
-    private ErrorResponse handleUnauthorized() {
-        httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        ErrorResponse.Error error = new ErrorResponse.Error(
-                ApplicationConstants.STATUS_FAILURE,
-                HttpServletResponse.SC_UNAUTHORIZED,
-                ApplicationConstants.MESSAGE_UNAUTHORIZED,
-                ApplicationConstants.DETAILS_UNAUTHORIZED);
-
-        errorResponse = new ErrorResponse(error);
-        return errorResponse;
-    }
-
-    private ErrorResponse handleInternalServerError() {
-        httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        ErrorResponse.Error error = new ErrorResponse.Error(
-                ApplicationConstants.STATUS_FAILURE,
-                HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                ApplicationConstants.MESSAGE_INTERNAL_SERVER_ERROR,
-                ApplicationConstants.DETAILS_INTERNAL_SERVER_ERROR);
-
-        errorResponse = new ErrorResponse(error);
-        return errorResponse;
-    }
-
-    private ErrorResponse handleServiceUnavailable() {
-        httpServletResponse.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-        ErrorResponse.Error error = new ErrorResponse.Error(
-                ApplicationConstants.STATUS_FAILURE,
-                HttpServletResponse.SC_SERVICE_UNAVAILABLE,
-                ApplicationConstants.MESSAGE_SERVICE_UNAVAILABLE,
-                ApplicationConstants.DETAILS_SERVICE_UNAVAILABLE);
-
-        errorResponse = new ErrorResponse(error);
-        return errorResponse;
+    public List<Email> getAllEmails() {
+        return emailRepository.findAll();
     }
 
 }

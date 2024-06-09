@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Email Template</title>
+</head>
+<body>
+    <h1>Elevate Your Skills with Our Exclusive Workshop!</h1>
+    <p>
+        Dear <span th:text="${recipientName}">[Recipient's Name]</span>,
+    </p>
+    <p>
+        Are you ready to level up your skills and accelerate your career? Join us for our upcoming workshop designed to help
+        you unlock your full potential.
+    </p>
+    <p>
+        <strong>Event Details:</strong><br>
+        <strong>Title:</strong> <span th:text="${eventName}">[Event Name]</span> - Elevate Your Skills<br>
+        <strong>Date:</strong> <span th:text="${eventDate}">[Event Date]</span><br>
+        <strong>Time:</strong> <span th:text="${eventTime}">[Event Time]</span><br>
+        <strong>Location:</strong> <span th:text="${eventLocation}">[Event Location]</span> (Virtual Event)
+    </p>
+    <p>
+        At <span th:text="${companyName}">[Company Name]</span>, we're passionate about empowering professionals like you
+        with the tools and knowledge needed to thrive in today's dynamic workplace.
+    </p>
+    <p>
+        Join us to:
+    </p>
+    <ul>
+       <li>Gain practical skills from industry experts</li>
+       <li>Connect with peers and expand your network</li>
+       <li>Discover new opportunities for growth and advancement</li>
+    </ul>
+    <p>
+        Don't miss out on this valuable opportunity! Secure your spot now by registering <a th:href="${eventRegistrationLink}">here</a>.
+    </p>
+    <p>
+        We look forward to seeing you there!
+    </p>
+    <p>
+        Best regards,<br>
+        <span th:text="${yourName}">[Your Name]</span><br>
+        <span th:text="${yourJobTitle}">[Your Job Title]</span><br>
+        <img th:src="${signature}" alt="Signature" src="${signature}">
+    </p>
+
+</body>
+</html>
