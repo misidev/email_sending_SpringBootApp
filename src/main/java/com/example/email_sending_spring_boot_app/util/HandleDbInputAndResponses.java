@@ -2,8 +2,11 @@ package com.example.email_sending_spring_boot_app.util;
 
 import com.example.email_sending_spring_boot_app.constants.ApplicationConstants;
 import com.example.email_sending_spring_boot_app.model.entity.Email;
+import com.example.email_sending_spring_boot_app.model.entity.User;
 import com.example.email_sending_spring_boot_app.model.response.EmailResponse;
 import com.example.email_sending_spring_boot_app.model.response.ErrorResponse;
+import com.example.email_sending_spring_boot_app.model.response.UserResponse;
+import com.example.email_sending_spring_boot_app.model.response.UsersResponse;
 import com.example.email_sending_spring_boot_app.repository.EmailRepository;
 import com.lowagie.text.DocumentException;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
 
@@ -31,10 +35,12 @@ public class HandleDbInputAndResponses {
     private ErrorResponse errorResponse;
     @Autowired
     private EmailRepository emailRepository;
-    @Autowired
-    private HttpServletResponse httpServletResponse;
 
     private EmailResponse emailResponse = null;
+
+    private UserResponse userResponse = null;
+
+    private UsersResponse usersResponse = null;
 
     public Email addingEmail(String subject, String body, String recipient, String sender, LocalDateTime timestamp) {
         Email email = new Email();
@@ -54,9 +60,8 @@ public class HandleDbInputAndResponses {
                 LOGGER.info("Email with attachment is added in db | toEmail {}, subject {}, body {} and sender {}", toEmail, subject, body, sender);
             }
         } catch (DataAccessException | ConstraintViolationException | TransactionSystemException ex) {
-            ex.printStackTrace();
-            //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
             LOGGER.info("Internal Server Error while adding Email with attachment in db");
+            throw ex;
         }
 
     }
@@ -68,23 +73,21 @@ public class HandleDbInputAndResponses {
             LOGGER.info("Email with attachment is added in db | toEmail {}, subject {}, body {} and sender {}", toEmail, subject, body, sender);
 
         } catch (DataAccessException | ConstraintViolationException | TransactionSystemException ex) {
-            ex.printStackTrace();
-            //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
             LOGGER.info("Internal Server Error while adding Email with attachment in db");
+            throw ex;
         }
 
     }
 
-    public String generatePdf(String appName, String appId, String applicationStatus, String date, String environment) throws DocumentException {
+    public String generatePdf(String appName, String appId, String status, String date, String environment) throws DocumentException, IOException {
         String htmlContent = "<html><body><h1>Application status:</h1>\n" +
                 "<ul>\n" +
                 "    <li><strong>Application Name:</strong> " + appName + "</li>\n" +
                 "    <li><strong>Application ID:</strong> " + appId + "</li>\n" +
-                "    <li><strong>Application status:</strong> " + applicationStatus + "</li>\n" +
+                "    <li><strong>Application status:</strong> " + status + "</li>\n" +
                 "    <li><strong>Start Date and time:</strong> " + date + "</li>\n" +
                 "    <li><strong>Environment:</strong> " + environment + "</li>\n" +
                 "</ul></body></html>";
-
 
         String pdfPath = "src/main/resources/static/app_status.pdf";
 
@@ -98,20 +101,20 @@ public class HandleDbInputAndResponses {
             filePdf = pdfPath;
 
             LOGGER.info("File app_status.pdf is generated on path {}", pdfPath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ex) {
+            LOGGER.info("Error while generating .pdf file");
+            throw ex;
         }
         return filePdf;
     }
 
     // Handle authentication failure
-    public ErrorResponse handleUnauthorized() {
-        httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // HTTP 401
+    public ErrorResponse handleUnauthorized(String exception) {
         ErrorResponse.Error error = new ErrorResponse.Error(
                 STATUS_FAILURE,
                 HttpServletResponse.SC_UNAUTHORIZED,
                 MESSAGE_UNAUTHORIZED,
-                DETAILS_UNAUTHORIZED);
+                DETAILS_UNAUTHORIZED + exception);
 
         errorResponse = new ErrorResponse(error);
 
@@ -120,13 +123,12 @@ public class HandleDbInputAndResponses {
     }
 
     // Handle other messaging exceptions
-    public ErrorResponse handleInternalServerError() {
-        httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // HTTP 500
+    public ErrorResponse handleInternalServerError(String exception) {
         ErrorResponse.Error error = new ErrorResponse.Error(
                 STATUS_FAILURE,
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                 MESSAGE_INTERNAL_SERVER_ERROR,
-                DETAILS_INTERNAL_SERVER_ERROR);
+                DETAILS_INTERNAL_SERVER_ERROR + exception);
 
         errorResponse = new ErrorResponse(error);
 
@@ -134,17 +136,44 @@ public class HandleDbInputAndResponses {
         return errorResponse;
     }
 
-    public ErrorResponse handleServiceUnavailable() {
-        httpServletResponse.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE); // HTTP 503
+    // user not found in DB
+    public ErrorResponse handleUsernameNotFound(String exception) {
+        ErrorResponse.Error error = new ErrorResponse.Error(
+                STATUS_FAILURE,
+                HttpServletResponse.SC_NOT_FOUND,
+                MESSAGE_NOT_FOUND,
+                DETAILS_NOT_FOUND + exception);
+
+        errorResponse = new ErrorResponse(error);
+
+        LOGGER.info("Error response for 404 Not Found: {}", errorResponse);
+        return errorResponse;
+    }
+
+    public ErrorResponse handleServiceUnavailable(String exception) {
         ErrorResponse.Error error = new ErrorResponse.Error(
                 STATUS_FAILURE,
                 HttpServletResponse.SC_SERVICE_UNAVAILABLE,
                 MESSAGE_SERVICE_UNAVAILABLE,
-                DETAILS_SERVICE_UNAVAILABLE);
+                DETAILS_SERVICE_UNAVAILABLE + exception);
 
         errorResponse = new ErrorResponse(error);
 
         LOGGER.info("Error response for 503 Service Unavailable: {}", errorResponse);
+        return errorResponse;
+    }
+
+    //bad request
+    public ErrorResponse handleBadRequest(String exception) {
+        ErrorResponse.Error error = new ErrorResponse.Error(
+                STATUS_FAILURE,
+                HttpServletResponse.SC_BAD_REQUEST,
+                MESSAGE_BAD_REQUEST,
+                DETAILS_BAD_REQUEST + exception);
+
+        errorResponse = new ErrorResponse(error);
+
+        LOGGER.info("Error response for 400 Bad Request: {}", errorResponse);
         return errorResponse;
     }
 
@@ -228,6 +257,28 @@ public class HandleDbInputAndResponses {
         LOGGER.info("Email response for /sendEmail endpoint - 200 OK: {}", emailResponse);
 
         return emailResponse;
+    }
+
+    public UserResponse handleSuccessResponseAddUser(User user) {
+        userResponse = new UserResponse(STATUS_SUCCESS,
+                HttpStatus.OK,
+                user,
+                LOGGER_MESSAGE_ADD_USER);
+
+        LOGGER.info("Email response for /add endpoint - 200 OK: {}", userResponse);
+
+        return userResponse;
+    }
+
+    public UsersResponse handleSuccessResponseGetUsers(List<User> users) {
+        usersResponse = new UsersResponse(STATUS_SUCCESS,
+                HttpStatus.OK,
+                users,
+                LOGGER_MESSAGE_GET_ALL_USERS);
+
+        LOGGER.info("Email response for /add endpoint - 200 OK: {}", usersResponse);
+
+        return usersResponse;
     }
 
 }

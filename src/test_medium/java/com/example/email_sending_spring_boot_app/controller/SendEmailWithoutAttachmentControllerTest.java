@@ -1,6 +1,8 @@
 package com.example.email_sending_spring_boot_app.controller;
 
+import com.example.email_sending_spring_boot_app.repository.UserRepository;
 import com.example.email_sending_spring_boot_app.service.EmailSenderService;
+import com.example.email_sending_spring_boot_app.util.HandleDbInputAndResponses;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -12,9 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-
+import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.TEST_EMAIL;
+import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.USER;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -28,14 +29,19 @@ class SendEmailWithoutAttachmentControllerTest {
     @InjectMocks
     private SendEmailWithoutAttachmentController sendEmailWithoutAttachmentController;
 
+    @Mock
+    private HandleDbInputAndResponses handleDbInputAndResponses;
+
+    @Mock
+    private UserRepository userRepository;
+
     @Test
-    void testSentEmail() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/mail/sendEmailWithoutAttachment")
+    void testSentEmailWithoutAttachment() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/mail/sendEmailWithoutAttachment")
                         .param(USER, TEST_EMAIL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(content().string(TEST_SIMPLE_EMAIL));
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
 }

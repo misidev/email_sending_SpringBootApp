@@ -82,20 +82,25 @@
             <version>2.6.7</version>
         </dependency>
 
-        <!--        pdf generator config-->
+        <!--pdf generator config-->
         <dependency>
             <groupId>org.xhtmlrenderer</groupId>
             <artifactId>flying-saucer-pdf</artifactId>
             <version>9.1.21</version>
         </dependency>
 
-        <!--        // Parse the full HTML content into a Jsoup Document-->
+        <!--Parse the full HTML content into a Jsoup Document-->
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>1.17.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

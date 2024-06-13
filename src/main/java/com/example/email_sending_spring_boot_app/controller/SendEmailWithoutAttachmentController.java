@@ -1,7 +1,6 @@
 package com.example.email_sending_spring_boot_app.controller;
 
 import com.example.email_sending_spring_boot_app.model.response.EmailResponse;
-import com.example.email_sending_spring_boot_app.model.response.ErrorResponse;
 import com.example.email_sending_spring_boot_app.service.EmailSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
 
 @RestController
-@RequestMapping("/api/mail")
+@RequestMapping("/api/v1/mail")
 public class SendEmailWithoutAttachmentController {
     private static final Logger logger = LoggerFactory.getLogger(SendEmailWithoutAttachmentController.class);
 

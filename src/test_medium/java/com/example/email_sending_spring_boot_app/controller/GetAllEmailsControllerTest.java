@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @SpringBootTest
 @AutoConfigureMockMvc
 class GetAllEmailsControllerTest {
@@ -29,7 +28,7 @@ class GetAllEmailsControllerTest {
 
     @Test
     void getAllUsers() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/mail/emails/all")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/mail/emails/all")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));

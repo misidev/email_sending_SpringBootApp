@@ -32,4 +32,5 @@ public class ThymeleafConfig {
         resolver.setViewClass(org.springframework.web.servlet.view.InternalResourceView.class);
         return resolver;
     }
+
 }

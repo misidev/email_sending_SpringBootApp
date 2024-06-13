@@ -19,6 +19,11 @@ public class User {
         this.email = email;
     }
 
+    // Required by Hibernate for entity instantiation
+    public User() {
+
+    }
+
     public Long getId() {
         return id;
     }

@@ -12,12 +12,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
+import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.TEST_REQUEST_BODY_ADD;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class SendMailWhenAppStartsControllerTest {
+class UsersControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -25,16 +26,23 @@ class SendMailWhenAppStartsControllerTest {
     private EmailSenderService emailSenderService;
 
     @InjectMocks
-    private SendMailWhenAppStartsController sendMailWhenAppStarts;
+    private UsersController addUsersController;
 
     @Test
-    void testSentEmail() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/mail/sendAppStartEmail")
-                        .param(USER, TEST_EMAIL)
+    void testAddingUsers() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/mail/users/add")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .content(TEST_REQUEST_BODY_ADD)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(content().string(TEST_APP_STARTS_EMAIL));
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    void getAllUsers() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/mail/users/all")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
 }

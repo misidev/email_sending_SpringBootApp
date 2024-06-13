@@ -1,0 +1,280 @@
+{
+	"info": {
+		"_postman_id": "0706b3dd-6360-4522-a299-7837813a5f8b",
+		"name": "spring-mail-service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20037462"
+	},
+	"item": [
+		{
+			"name": "Send Email without attachments /sendEmailWithoutAttachment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8088/api/v1/mail/sendEmailWithoutAttachment?user=testserviceuser888@yahoo.com",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"api",
+						"v1",
+						"mail",
+						"sendEmailWithoutAttachment"
+					],
+					"query": [
+						{
+							"key": "user",
+							"value": "testserviceuser888@yahoo.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send Email with attachment /sendEmailWithAttachmen",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8088/api/v1/mail/sendEmailWithAttachment?user=testserviceuser888@yahoo.com&subject=User notification with attachment&body=Post request for user with attachment is triggered!&file=src/main/resources/images/misidev_logo.png",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"api",
+						"v1",
+						"mail",
+						"sendEmailWithAttachment"
+					],
+					"query": [
+						{
+							"key": "user",
+							"value": "testserviceuser888@yahoo.com"
+						},
+						{
+							"key": "subject",
+							"value": "User notification with attachment"
+						},
+						{
+							"key": "body",
+							"value": "Post request for user with attachment is triggered!"
+						},
+						{
+							"key": "file",
+							"value": "src/main/resources/images/misidev_logo.png"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send Email App is Starting Email /sendAppStartEmail",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8088/api/v1/mail/sendAppStartEmail",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"api",
+						"v1",
+						"mail",
+						"sendAppStartEmail"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send Email App is Shutting down /sendShutdownEmail",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8088/api/v1/mail/sendShutdownEmail",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"api",
+						"v1",
+						"mail",
+						"sendShutdownEmail"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send Email with attachment included within the email body /sendEmail",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "attachments",
+							"type": "file",
+							"src": "/C:/Users/Korisnik/IdeaProjects/email_sending_SpringBootApp/src/main/resources/images/misidev_logo.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8088/api/v1/mail/sendEmail?user=testserviceuser888@yahoo.com&subject=Sending attachment&body=Sending attachment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"api",
+						"v1",
+						"mail",
+						"sendEmail"
+					],
+					"query": [
+						{
+							"key": "user",
+							"value": "testserviceuser888@yahoo.com",
+							"description": "testserviceuser888@yahoo.com"
+						},
+						{
+							"key": "subject",
+							"value": "Sending attachment",
+							"description": "test"
+						},
+						{
+							"key": "body",
+							"value": "Sending attachment",
+							"description": "test"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send email with template /sendEmailTemplate",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"toEmail\":[\"testserviceuser888@yahoo.com\"],\r\n    \"subject\":\"Knowledge Transfer\",\r\n    \"eventName\":\"Mastering Email Communication: Exploring the JavaMail API\",\r\n    \"eventDate\":\"8. July 2024\",\r\n    \"eventTime\":\"11:00\",\r\n    \"eventLocation\":\"Online\",\r\n    \"eventRegistrationLink\":\"event_registration_link.com\",\r\n    \"recipientName\":\"Alex\",\r\n    \"companyName\":\"misidev\",\r\n    \"yourName\":\"Milica\",\r\n    \"yourJobTitle\":\"Software Engineer\",\r\n    \"signature\":\"src/main/resources/images/misidev_signature.png\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8088/api/v1/mail/sendEmailTemplate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"api",
+						"v1",
+						"mail",
+						"sendEmailTemplate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all emails /emails/all",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8088/api/v1/mail/emails/all",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"api",
+						"v1",
+						"mail",
+						"emails",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all users",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8088/api/v1/mail/users/all",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"api",
+						"v1",
+						"mail",
+						"users",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add users /users/add",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"Alex\",\r\n    \"email\":\"test.service.user888@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8088/api/v1/mail/users/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"api",
+						"v1",
+						"mail",
+						"users",
+						"add"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

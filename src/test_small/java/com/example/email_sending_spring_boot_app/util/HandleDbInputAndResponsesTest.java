@@ -1,26 +1,34 @@
 package com.example.email_sending_spring_boot_app.util;
 
+import com.example.email_sending_spring_boot_app.constants.ApplicationConstants;
 import com.example.email_sending_spring_boot_app.model.entity.Email;
+import com.example.email_sending_spring_boot_app.model.entity.User;
+import com.example.email_sending_spring_boot_app.model.response.EmailResponse;
+import com.example.email_sending_spring_boot_app.model.response.ErrorResponse;
+import com.example.email_sending_spring_boot_app.model.response.UserResponse;
+import com.example.email_sending_spring_boot_app.model.response.UsersResponse;
 import com.example.email_sending_spring_boot_app.repository.EmailRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockMultipartFile;
+
+import java.util.List;
 
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.*;
 
+@SpringBootTest
 class HandleDbInputAndResponsesTest {
     @InjectMocks
     private HandleDbInputAndResponses handleDbInputAndResponses;
 
     @Mock
     private EmailRepository emailRepository;
-    @Mock
-    private HttpServletResponse httpServletResponse;
 
     @BeforeEach
     public void setUp() {
@@ -46,68 +54,181 @@ class HandleDbInputAndResponsesTest {
     }
 
     @Test
-    void saveEmailsTest() {
-        Email email1 = new Email(TEST_ID,
-                TEST_EMAIL_1,
-                TEST_EMAIL,
-                TEST_SUBJECT,
-                TEST_BODY,
-                TEST_TIMESTAMP);
-
-//        when(handleDbInputAndResponses.addingEmail(TEST_SUBJECT,
-//                TEST_BODY,
-//                TEST_EMAIL,
-//                TEST_EMAIL_1,
-//                TEST_TIMESTAMP)).thenReturn(email1);
-//        doReturn(email1).when(handleDbInputAndResponses).addingEmail(TEST_SUBJECT,
-//                TEST_BODY,
-//                TEST_EMAIL,
-//                TEST_EMAIL_1,
-//                TEST_TIMESTAMP);
-
-        handleDbInputAndResponses.saveEmail(TEST_EMAIL, TEST_SUBJECT, TEST_BODY, TEST_EMAIL_1);
-
-//        // Verify that emailRepository.save() is called with the correct parameters
-//        verify(emailRepository).save(argThat(email -> email.getRecipient().equals(TEST_EMAIL) &&
-//                email.getSubject().equals(TEST_SUBJECT) &&
-//                email.getBody().equals(TEST_BODY) &&
-//                email.getSender().equals(TEST_EMAIL_1) &&
-//                email.getTimestamp() != null));
-    }
-
-    @Test
-    void saveEmail() {
-    }
-
-    @Test
     void handleUnauthorized() {
+        ErrorResponse.Error error = new ErrorResponse.Error(
+                STATUS_FAILURE,
+                HttpServletResponse.SC_UNAUTHORIZED,
+                MESSAGE_UNAUTHORIZED,
+                DETAILS_UNAUTHORIZED + "MailAuthenticationException");
+
+        ErrorResponse errorResponseExpected = new ErrorResponse(error);
+        ErrorResponse errorResponseActual = handleDbInputAndResponses.handleUnauthorized("MailAuthenticationException");
+
+        assertEquals(errorResponseExpected.toString(), errorResponseActual.toString());
     }
 
     @Test
     void handleInternalServerError() {
+        ErrorResponse.Error error = new ErrorResponse.Error(
+                STATUS_FAILURE,
+                HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                MESSAGE_INTERNAL_SERVER_ERROR,
+                DETAILS_INTERNAL_SERVER_ERROR + "UsernameException");
+
+        ErrorResponse errorResponseExpected = new ErrorResponse(error);
+        ErrorResponse errorResponseActual = handleDbInputAndResponses.handleInternalServerError("UsernameException");
+
+        assertEquals(errorResponseExpected.toString(), errorResponseActual.toString());
     }
 
     @Test
-    void handleServiceUnavailable() {
+    void testHandleBadRequest() {
+        ErrorResponse.Error error = new ErrorResponse.Error(
+                STATUS_FAILURE,
+                HttpServletResponse.SC_BAD_REQUEST,
+                MESSAGE_BAD_REQUEST,
+                DETAILS_BAD_REQUEST + "ConstraintViolationException");
+
+        ErrorResponse errorResponseExpected = new ErrorResponse(error);
+        ErrorResponse errorResponseActual = handleDbInputAndResponses.handleBadRequest("ConstraintViolationException");
+
+        assertEquals(errorResponseExpected.toString(), errorResponseActual.toString());
+    }
+
+    @Test
+    void testHandleUsernameNotFound() {
+        ErrorResponse.Error error = new ErrorResponse.Error(
+                STATUS_FAILURE,
+                HttpServletResponse.SC_NOT_FOUND,
+                MESSAGE_NOT_FOUND,
+                DETAILS_NOT_FOUND + "UsernameException");
+
+        ErrorResponse errorResponseExpected = new ErrorResponse(error);
+        ErrorResponse errorResponseActual = handleDbInputAndResponses.handleUsernameNotFound("UsernameException");
+
+        assertEquals(errorResponseExpected.toString(), errorResponseActual.toString());
     }
 
     @Test
     void handleSuccessResponseAppStarts() {
+        EmailResponse.EmailData emailData = new EmailResponse.EmailData(EMAIL_LIST,
+                APP_STARTING_SUBJECT,
+                APP_STARTING_BODY,
+                SIGNATURE);
+
+        EmailResponse emailResponseExpected = new EmailResponse(
+                STATUS_SUCCESS,
+                HttpStatus.OK,
+                emailData,
+                APP_STARTING);
+
+        EmailResponse emailResponseActual = handleDbInputAndResponses.handleSuccessResponseAppStarts();
+
+        assertEquals(emailResponseExpected.toString(), emailResponseActual.toString());
     }
 
     @Test
     void handleSuccessResponseShutdown() {
+
+        EmailResponse.EmailData emailData = new EmailResponse.EmailData(EMAIL_LIST,
+                APP_SHUTDOWN_SUBJECT,
+                APP_SHUTDOWN_BODY,
+                SIGNATURE);
+
+        EmailResponse emailResponseExpected = new EmailResponse(
+                ApplicationConstants.STATUS_SUCCESS,
+                HttpStatus.OK,
+                emailData,
+                ApplicationConstants.APP_SHUTDOWN);
+
+        EmailResponse emailResponseActual = handleDbInputAndResponses.handleSuccessResponseShutdown();
+
+        assertEquals(emailResponseExpected.toString(), emailResponseActual.toString());
     }
 
     @Test
     void handleSuccessResponseAttachment() {
+        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{TEST_EMAIL}, TEST_SUBJECT, TEST_BODY, TEST_FILE);
+
+        EmailResponse emailResponseExpected = new EmailResponse(
+                STATUS_SUCCESS,
+                HttpStatus.OK,
+                emailData,
+                LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
+
+        EmailResponse emailResponseActual = handleDbInputAndResponses.handleSuccessResponseAttachment(TEST_EMAIL, TEST_SUBJECT, TEST_BODY, TEST_FILE);
+
+        assertEquals(emailResponseExpected.toString(), emailResponseActual.toString());
     }
 
     @Test
     void handleSuccessResponseSimple() {
+        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{TEST_EMAIL},
+                SUBJECT_FOR_SIMPLE_MAIL,
+                BODY_FOR_SIMPLE_MAIL);
+
+        EmailResponse emailResponseExpected = new EmailResponse(
+                STATUS_SUCCESS,
+                HttpStatus.OK,
+                emailData,
+                LOGGER_MESSAGE_FOR_SIMPLE_MAIL);
+
+        EmailResponse emailResponseActual = handleDbInputAndResponses.handleSuccessResponseSimple(TEST_EMAIL);
+
+        assertEquals(emailResponseExpected.toString(), emailResponseActual.toString());
+    }
+
+    @Test
+    void testHandleSuccessResponseAddUse() {
+
+        User user = new User(1L, "Alex", "testserviceuser888@yahoo.com");
+
+        UserResponse userResponseExpected = new UserResponse(STATUS_SUCCESS,
+                HttpStatus.OK,
+                user,
+                LOGGER_MESSAGE_ADD_USER);
+
+        UserResponse userResponseActual = handleDbInputAndResponses.handleSuccessResponseAddUser(user);
+
+        assertEquals(userResponseExpected.toString(), userResponseActual.toString());
+    }
+
+    @Test
+    void testHandleSuccessResponseGetUsers() {
+
+        User user = new User(1L, "Alex", "testserviceuser888@yahoo.com");
+        List<User> users = List.of(user);
+
+        UsersResponse userResponseExpected = new UsersResponse(STATUS_SUCCESS,
+                HttpStatus.OK,
+                users,
+                LOGGER_MESSAGE_GET_ALL_USERS);
+
+        UsersResponse userResponseActual = handleDbInputAndResponses.handleSuccessResponseGetUsers(users);
+
+        assertEquals(userResponseExpected.toString(), userResponseActual.toString());
     }
 
     @Test
     void handleSuccessResponseMultipartFile() {
+        MockMultipartFile attachment = new MockMultipartFile("attachments", "test.txt", "text/plain", "Attachment Content".getBytes());
+
+        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{TEST_EMAIL},
+                TEST_SUBJECT,
+                TEST_BODY,
+                attachment.getOriginalFilename());
+
+        EmailResponse emailResponseExpected = new EmailResponse(
+                STATUS_SUCCESS,
+                HttpStatus.OK,
+                emailData,
+                LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
+        EmailResponse emailResponseActual = handleDbInputAndResponses.handleSuccessResponseMultipartFile(TEST_EMAIL,
+                TEST_SUBJECT,
+                TEST_BODY,
+                attachment);
+
+        assertEquals(emailResponseExpected.toString(), emailResponseActual.toString());
     }
+
 }

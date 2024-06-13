@@ -1,4 +1,4 @@
-package com.example.email_sending_spring_boot_app.util;
+package com.example.email_sending_spring_boot_app.aspect;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

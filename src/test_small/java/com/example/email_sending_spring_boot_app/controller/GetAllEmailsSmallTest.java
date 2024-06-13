@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-class GetAllEmailsTestSmall {
+class GetAllEmailsSmallTest {
     @Mock
     private EmailRepository emailRepository;
 

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/mail")
+@RequestMapping("/api/v1/mail")
 public class GetAllEmailsController {
     private static final Logger logger = LoggerFactory.getLogger(GetAllEmailsController.class);
 

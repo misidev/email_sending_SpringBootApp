@@ -7,13 +7,13 @@
 <body>
 <p>Dear <span th:text="${user}"></span>,</p>
 
-<p>We are pleased to inform you that your application <strong th:text="${appName}"></strong> has been <strong th:text="${applicationStatus}"></strong>. This email confirms that everything is up and running smoothly.</p>
+<p>We are pleased to inform you that your application <strong th:text="${appName}"></strong> has been <strong th:text="${applicationStatus}"></strong>. <span th:text="${description}"></span></p>
 
 <p><strong>Application Details:</strong></p>
 <ul id="startMarker">
     <li><strong>Application Name:</strong> <span th:text="${appName}"></span></li>
     <li><strong>Application ID:</strong> <span th:text="${appId}"></span></li>
-    <li><strong>Application status:</strong> <span th:text="${applicationStatus}"></span></li>
+    <li><strong>Application status:</strong> <span th:text="${status}"></span></li>
     <li><strong>Start Date and time :</strong> <span th:text="${date}"></span></li>
     <li><strong>Environment:</strong> <span th:text="${environment}" ></span></li>
 </ul >

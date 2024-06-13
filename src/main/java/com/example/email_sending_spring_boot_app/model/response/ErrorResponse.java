@@ -18,12 +18,18 @@ public class ErrorResponse {
         this.error = error;
     }
 
+    @Override
+    public String toString() {
+        return "ErrorResponse{" +
+                "error=" + error +
+                '}';
+    }
+
     public static class Error {
         String status;
         Integer code;
         String message;
         String details;
-
         public Error(String status, Integer code, String message, String details) {
             this.status = status;
             this.code = code;
@@ -62,6 +68,16 @@ public class ErrorResponse {
 
         public void setStatus(String status) {
             this.status = status;
+        }
+
+        @Override
+        public String toString() {
+            return "Error{" +
+                    "status='" + status + '\'' +
+                    ", code=" + code +
+                    ", message='" + message + '\'' +
+                    ", details='" + details + '\'' +
+                    '}';
         }
     }
 }
