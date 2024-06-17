@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @RunWith(SpringRunner.class)
-class SendEmailWithoutAttachmentControllerSmallTest {
+class SendEmailWithoutAttachmentControllerTestSmall {
     @Mock
     private EmailSenderService emailSenderService;
 

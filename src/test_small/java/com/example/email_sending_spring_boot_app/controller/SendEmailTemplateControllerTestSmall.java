@@ -6,21 +6,26 @@ import com.example.email_sending_spring_boot_app.model.response.EmailTemplateRes
 import com.example.email_sending_spring_boot_app.service.EmailSenderService;
 import com.example.email_sending_spring_boot_app.util.HandleDbInputAndResponses;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
 
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
+import static com.example.email_sending_spring_boot_app.constants.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
-class SendEmailTemplateControllerSmallTest {
+@ExtendWith(SpringExtension.class)
+@RunWith(SpringRunner.class)
+class SendEmailTemplateControllerTestSmall {
     @Mock
     private EmailSenderService emailSenderService;
     @Mock
@@ -32,7 +37,7 @@ class SendEmailTemplateControllerSmallTest {
 
     @Test
     void sendEmailSmallTest() throws Exception {
-        EmailRequest emailRequest = new EmailRequest(new String[]{TEST_EMAIL},
+        EmailRequest emailRequest = new EmailRequest(new String[]{EMAIL},
                 TEST_SUBJECT,
                 TEST_EVENT_NAME,
                 TEST_EVENT_DATE,

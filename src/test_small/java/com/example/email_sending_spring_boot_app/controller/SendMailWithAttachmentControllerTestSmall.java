@@ -3,19 +3,25 @@ package com.example.email_sending_spring_boot_app.controller;
 import com.example.email_sending_spring_boot_app.model.response.EmailResponse;
 import com.example.email_sending_spring_boot_app.service.EmailSenderService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
+import static com.example.email_sending_spring_boot_app.constants.TestConstants.TEST_BODY;
+import static com.example.email_sending_spring_boot_app.constants.TestConstants.TEST_SUBJECT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
-class SendMailWithAttachmentControllerSmallTest {
+@ExtendWith(SpringExtension.class)
+@RunWith(SpringRunner.class)
+class SendMailWithAttachmentControllerTestSmall {
     @Mock
     private EmailSenderService emailSenderService;
 
@@ -33,7 +39,7 @@ class SendMailWithAttachmentControllerSmallTest {
                 "text/plain",
                 "Attachment Content".getBytes());
 
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{TEST_EMAIL},
+        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{EMAIL},
                 TEST_SUBJECT,
                 TEST_BODY,
                 attachment.getOriginalFilename());
@@ -43,12 +49,12 @@ class SendMailWithAttachmentControllerSmallTest {
                 emailData,
                 LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
 
-        when(emailSenderService.sendAttachedEmailThroughRequest(new String[]{TEST_EMAIL},
+        when(emailSenderService.sendAttachedEmailThroughRequest(new String[]{EMAIL},
                 TEST_SUBJECT,
                 TEST_BODY,
                 attachment)).thenReturn(emailResponseExpected);
 
-        emailResponseActual = sendMailWithAttachmentController.sentEmail(TEST_EMAIL,
+        emailResponseActual = sendMailWithAttachmentController.sentEmail(EMAIL,
                 TEST_SUBJECT,
                 TEST_BODY,
                 attachment);
@@ -58,7 +64,7 @@ class SendMailWithAttachmentControllerSmallTest {
 
     @Test
     void testSentEmailWithAttachment() throws Exception {
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{TEST_EMAIL},
+        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{EMAIL},
                 SUBJECT_FOR_MAIL_WITH_ATTACHMENT,
                 BODY_FOR_MAIL_WITH_ATTACHMENT,
                 FILE_FOR_MAIL_WITH_ATTACHMENT);
@@ -69,14 +75,14 @@ class SendMailWithAttachmentControllerSmallTest {
                 emailData,
                 LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
 
-        when(emailSenderService.sendAttachedEmail(TEST_EMAIL,
+        when(emailSenderService.sendAttachedEmail(EMAIL,
                 SUBJECT_FOR_MAIL_WITH_ATTACHMENT,
                 BODY_FOR_MAIL_WITH_ATTACHMENT,
                 FILE_FOR_MAIL_WITH_ATTACHMENT,
                 null,
                 null)).thenReturn(emailResponseExpected);
 
-        emailResponseActual = sendMailWithAttachmentController.sentEmailWithAttachment(TEST_EMAIL,
+        emailResponseActual = sendMailWithAttachmentController.sentEmailWithAttachment(EMAIL,
                 emailData.getSubject(),
                 emailData.getBody(),
                 emailData.getFile());

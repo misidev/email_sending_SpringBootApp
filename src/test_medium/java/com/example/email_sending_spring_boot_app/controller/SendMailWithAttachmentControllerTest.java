@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -15,6 +14,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
+import static com.example.email_sending_spring_boot_app.constants.TestConstants.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,7 +37,7 @@ class SendMailWithAttachmentControllerTest {
 
         mockMvc.perform(multipart("/api/v1/mail/sendEmail")
                         .file(attachment)
-                        .param(USER, TEST_EMAIL)
+                        .param(USER, EMAIL)
                         .param(SUBJECT, TEST_SUBJECT)
                         .param(BODY, TEST_BODY))
                 .andExpect(status().isOk());
@@ -46,7 +46,7 @@ class SendMailWithAttachmentControllerTest {
     @Test
     void testSentEmailWithAttachment() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/mail/sendEmailWithAttachment")
-                        .param(USER, TEST_EMAIL)
+                        .param(USER, EMAIL)
                         .param(SUBJECT, SUBJECT_FOR_MAIL_WITH_ATTACHMENT)
                         .param(BODY, BODY_FOR_MAIL_WITH_ATTACHMENT)
                         .param(FILE, FILE_FOR_MAIL_WITH_ATTACHMENT)

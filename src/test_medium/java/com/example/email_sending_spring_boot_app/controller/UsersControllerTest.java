@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.TEST_REQUEST_BODY_ADD;
+import static com.example.email_sending_spring_boot_app.constants.TestConstants.TEST_REQUEST_BODY_ADD;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
