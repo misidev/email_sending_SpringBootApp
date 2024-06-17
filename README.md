@@ -396,31 +396,62 @@ This GetAllEmailsController handles requests related to adding user in db and ge
 #### Example of one ErrorResponse for all endpoints
 
   ```json
-  {
-  "error": {
-    "status": "failure",
-    "code": 500,
-    "message": "Internal Server Error",
-    "details": "An unexpected error occurred while processing your request, caused by exception: MailConnectException"
+     {
+       "error": {
+       "status": "failure",
+       "code": 500,
+       "message": "Internal Server Error",
+       "details": "An unexpected error occurred while processing your request, caused by exception: MailConnectException"
+       }
     }
-  }
   ```
 
-#### Example of logs
+#### Example of logs for 200 OK 
+  ```
+2024-06-17T16:35:11.182+02:00  INFO 4464 --- [spring-mail-service] [nio-8088-exec-1] c.e.e.util.HandleDbInputAndResponses     : File app_status.pdf is generated on path src/main/resources/static/app_status.pdf
+2024-06-17T16:35:11.182+02:00  INFO 4464 --- [spring-mail-service] [nio-8088-exec-1] c.e.e.aspect.LoggingAspect               : Execution time of class: HandleDbInputAndResponses and method: generatePdf  :: 26 ms
+2024-06-17T16:35:13.902+02:00  INFO 4464 --- [spring-mail-service] [nio-8088-exec-1] c.e.e.util.HandleDbInputAndResponses     : Email response for /sendAppStartEmail endpoint - 200 OK: EmailTemplateResponse{status='success', code=200 OK, data=EmailData{toEmail=[testserviceuser888@yahoo.com, test.service.user888@gmail.com], subject='App is started', body='App is successfully started!', file='src/main/resources/images/misidev_signature.png'}, message='Email to notify that the application has started running'}
+2024-06-17T16:35:13.902+02:00  INFO 4464 --- [spring-mail-service] [nio-8088-exec-1] c.e.e.aspect.LoggingAspect               : Execution time of class: HandleDbInputAndResponses and method: handleSuccessResponseAppStarts  :: 0 ms
+2024-06-17T16:35:13.902+02:00  INFO 4464 --- [spring-mail-service] [nio-8088-exec-1] c.e.e.impl.EmailSenderServiceImpl        : Email with attachment is sent from user: sieric215@gmail.com to test.service.user888@gmail.com
+Hibernate: insert into email (body,recipient,sender,subject,timestamp,id) values (?,?,?,?,?,default)
+2024-06-17T16:35:13.906+02:00  INFO 4464 --- [spring-mail-service] [nio-8088-exec-1] c.e.e.aspect.LoggingAspect               : Execution time of class: CrudRepository and method: save  :: 3 ms
+2024-06-17T16:35:13.906+02:00  INFO 4464 --- [spring-mail-service] [nio-8088-exec-1] c.e.e.util.HandleDbInputAndResponses     : Email with attachment is added in db | toEmail test.service.user888@gmail.com, subject App is started, body email_app_status.html and sender sieric215@gmail.com
+2024-06-17T16:35:13.907+02:00  INFO 4464 --- [spring-mail-service] [nio-8088-exec-1] c.e.e.aspect.LoggingAspect               : Execution time of class: HandleDbInputAndResponses and method: saveEmail  :: 4 ms
+2024-06-17T16:35:13.907+02:00  INFO 4464 --- [spring-mail-service] [nio-8088-exec-1] c.e.e.aspect.LoggingAspect               : Execution time of class: EmailSenderServiceImpl and method: sendEmailsAppStartsShutdown  :: 5945 ms
+2024-06-17T16:35:13.907+02:00  INFO 4464 --- [spring-mail-service] [nio-8088-exec-1] c.e.e.c.SendEmailTemplateController      : Email to notify that the application has started running
+2024-06-17T16:35:13.907+02:00  INFO 4464 --- [spring-mail-service] [nio-8088-exec-1] c.e.e.aspect.LoggingAspect               : Execution time of class: SendEmailTemplateController and method: triggerMail  :: 5945 ms
+  ```
+#### Example of error logs 
+```
+2024-06-17T16:30:30.671+02:00  INFO 448 --- [spring-mail-service] [nio-8088-exec-2] c.e.e.util.HandleDbInputAndResponses     : File app_status.pdf is generated on path src/main/resources/static/app_status.pdf
+2024-06-17T16:30:30.672+02:00  INFO 448 --- [spring-mail-service] [nio-8088-exec-2] c.e.e.aspect.LoggingAspect               : Execution time of class: HandleDbInputAndResponses and method: generatePdf  :: 2136 ms
+2024-06-17T16:30:34.566+02:00  INFO 448 --- [spring-mail-service] [nio-8088-exec-2] c.e.e.advice.GlobalExceptionHandler      : "Error caused by exception : MailAuthenticationException", Status code of exception : 401 UNAUTHORIZED"
+2024-06-17T16:30:34.769+02:00  INFO 448 --- [spring-mail-service] [nio-8088-exec-2] c.e.e.util.HandleDbInputAndResponses     : Error response for 401 Unauthorized: ErrorResponse{error=Error{status='failure', code=401, message='Unauthorized', details='You are not authorized to access this resource, caused by exception: MailAuthenticationException'}}
+2024-06-17T16:30:34.791+02:00  INFO 448 --- [spring-mail-service] [nio-8088-exec-2] c.e.e.aspect.LoggingAspect               : Execution time of class: HandleDbInputAndResponses and method: handleUnauthorized  :: 125 ms
+2024-06-17T16:30:34.792+02:00  INFO 448 --- [spring-mail-service] [nio-8088-exec-2] c.e.e.aspect.LoggingAspect               : Execution time of class: GlobalExceptionHandler and method: handleMailAuthenticationException  :: 229 ms
+```
 
-
-
-#### JUnit Tests
+#### JUnit Tests 
 
 | Test Type | Class, % | Method, % | Line, % |
 |-----------|----------|-----------|---------|
-| Small     |          |           |         |
+| Small     | 92       | 65        | 64      |
 | Medium    |          |           |         |
 
+<span style="color:red">issue running whole package with coverage! fix in progress!</span>
 
 
-
-
+PLANED IMPROVEMENT:
+ - Update JUnit test to increase line coverage (Add invalid small/medium tests for all packages and add missing valid small tests for service package),
+ - Enhance the saving of emails in the database to include the template content,
+ - Enhance the DB using Liquibase, add constraints, indexes, and improve exception handling related to DB,
+ - Handle validation for input data for adding email or user in DB,
+ - Add more user information in user profile (check if users table from myapp service (user registration/login) can be connected with users table from spring-mail-service or call GET to myapp service and retrieve users data),
+ - Implement Lombok.
+ - Sending translated emails
+ - Add rate limiting configuration in config for spring_cloud_getaway instead bucket4j config
+ - Change documentation - OpenAPI(Swagger)
+ - Create UI for sending email - choosing email template, users to send email, subject,etc. (connect to myapp frontend?)
 
 
 

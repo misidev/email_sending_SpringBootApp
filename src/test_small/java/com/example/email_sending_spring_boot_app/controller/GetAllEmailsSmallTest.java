@@ -4,22 +4,26 @@ import com.example.email_sending_spring_boot_app.model.entity.Email;
 import com.example.email_sending_spring_boot_app.repository.EmailRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
+import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.EMAIL;
+import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.EMAIL_1;
+import static com.example.email_sending_spring_boot_app.constants.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@RunWith(SpringRunner.class)
 class GetAllEmailsSmallTest {
     @Mock
     private EmailRepository emailRepository;
@@ -35,15 +39,15 @@ class GetAllEmailsSmallTest {
     @Test
     void testGetAllUsers() {
         Email email1 = new Email(TEST_ID,
-                TEST_EMAIL_1,
-                TEST_EMAIL,
+                EMAIL_1,
+                EMAIL,
                 TEST_SUBJECT,
                 TEST_BODY,
                 TEST_TIMESTAMP);
 
         Email email2 = new Email(TEST_ID_2,
-                TEST_EMAIL,
-                TEST_EMAIL_1,
+                EMAIL,
+                EMAIL_1,
                 TEST_SUBJECT,
                 TEST_BODY,
                 TEST_TIMESTAMP);

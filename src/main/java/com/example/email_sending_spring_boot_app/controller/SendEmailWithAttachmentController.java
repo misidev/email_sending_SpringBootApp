@@ -1,7 +1,6 @@
 package com.example.email_sending_spring_boot_app.controller;
 
 import com.example.email_sending_spring_boot_app.model.response.EmailResponse;
-import com.example.email_sending_spring_boot_app.impl.EmailSenderServiceImpl;
 import com.example.email_sending_spring_boot_app.service.EmailSenderService;
 import jakarta.mail.MessagingException;
 import org.slf4j.Logger;

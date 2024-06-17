@@ -4,7 +4,6 @@ import com.example.email_sending_spring_boot_app.model.entity.User;
 import com.example.email_sending_spring_boot_app.model.response.UserResponse;
 import com.example.email_sending_spring_boot_app.model.response.UsersResponse;
 import com.example.email_sending_spring_boot_app.repository.UserRepository;
-import com.example.email_sending_spring_boot_app.service.UsersService;
 import com.example.email_sending_spring_boot_app.util.HandleDbInputAndResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,7 @@ public class UsersController {
     private HandleDbInputAndResponses handleDbInputAndResponses;
 
     @PostMapping("/add")
-    public ResponseEntity<UserResponse> addUser(@RequestBody User user)  {
+    public ResponseEntity<UserResponse> addUser(@RequestBody User user) {
         User savedUser = userRepository.save(user);
 
         LOGGER.info(LOGGER_MESSAGE_ADD_USER);
@@ -38,7 +37,7 @@ public class UsersController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<UsersResponse> getAllUsers()  {
+    public ResponseEntity<UsersResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
 
         LOGGER.info(LOGGER_MESSAGE_GET_ALL_USERS);

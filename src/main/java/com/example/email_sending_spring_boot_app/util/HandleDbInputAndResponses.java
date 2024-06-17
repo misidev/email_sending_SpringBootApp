@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
+import static com.example.email_sending_spring_boot_app.controller.SendEmailTemplateController.EMAIL_LIST;
 
 @Component
 public class HandleDbInputAndResponses {
@@ -37,10 +38,6 @@ public class HandleDbInputAndResponses {
     private EmailRepository emailRepository;
 
     private EmailResponse emailResponse = null;
-
-    private UserResponse userResponse = null;
-
-    private UsersResponse usersResponse = null;
 
     public Email addingEmail(String subject, String body, String recipient, String sender, LocalDateTime timestamp) {
         Email email = new Email();
@@ -80,13 +77,14 @@ public class HandleDbInputAndResponses {
     }
 
     public String generatePdf(String appName, String appId, String status, String date, String environment) throws DocumentException, IOException {
+        String listClosingTag = "</li>\n";
         String htmlContent = "<html><body><h1>Application status:</h1>\n" +
                 "<ul>\n" +
-                "    <li><strong>Application Name:</strong> " + appName + "</li>\n" +
-                "    <li><strong>Application ID:</strong> " + appId + "</li>\n" +
-                "    <li><strong>Application status:</strong> " + status + "</li>\n" +
-                "    <li><strong>Start Date and time:</strong> " + date + "</li>\n" +
-                "    <li><strong>Environment:</strong> " + environment + "</li>\n" +
+                "    <li><strong>Application Name:</strong> " + appName + listClosingTag +
+                "    <li><strong>Application ID:</strong> " + appId + listClosingTag +
+                "    <li><strong>Application status:</strong> " + status + listClosingTag +
+                "    <li><strong>Start Date and time:</strong> " + date + listClosingTag +
+                "    <li><strong>Environment:</strong> " + environment + listClosingTag +
                 "</ul></body></html>";
 
         String pdfPath = "src/main/resources/static/app_status.pdf";
@@ -191,7 +189,6 @@ public class HandleDbInputAndResponses {
                 APP_STARTING);
 
         LOGGER.info("Email response for /sendAppStartEmail endpoint - 200 OK: {}", emailResponse);
-
         return emailResponse;
     }
 
@@ -208,7 +205,6 @@ public class HandleDbInputAndResponses {
                 ApplicationConstants.APP_SHUTDOWN);
 
         LOGGER.info("Email response for /sendShutdownEmail endpoint - 200 OK: {}", emailResponse);
-
         return emailResponse;
     }
 
@@ -222,7 +218,6 @@ public class HandleDbInputAndResponses {
                 LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
 
         LOGGER.info("Email response for /sendEmailWithAttachment endpoint - 200 OK: {}", emailResponse);
-
         return emailResponse;
     }
 
@@ -238,7 +233,6 @@ public class HandleDbInputAndResponses {
                 LOGGER_MESSAGE_FOR_SIMPLE_MAIL);
 
         LOGGER.info("Email response for /sendEmailWithoutAttachment endpoint - 200 OK: {}", emailResponse);
-
         return emailResponse;
     }
 
@@ -255,29 +249,26 @@ public class HandleDbInputAndResponses {
                 LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
 
         LOGGER.info("Email response for /sendEmail endpoint - 200 OK: {}", emailResponse);
-
         return emailResponse;
     }
 
     public UserResponse handleSuccessResponseAddUser(User user) {
-        userResponse = new UserResponse(STATUS_SUCCESS,
+        UserResponse userResponse = new UserResponse(STATUS_SUCCESS,
                 HttpStatus.OK,
                 user,
                 LOGGER_MESSAGE_ADD_USER);
 
         LOGGER.info("Email response for /add endpoint - 200 OK: {}", userResponse);
-
         return userResponse;
     }
 
     public UsersResponse handleSuccessResponseGetUsers(List<User> users) {
-        usersResponse = new UsersResponse(STATUS_SUCCESS,
+        UsersResponse usersResponse = new UsersResponse(STATUS_SUCCESS,
                 HttpStatus.OK,
                 users,
                 LOGGER_MESSAGE_GET_ALL_USERS);
 
         LOGGER.info("Email response for /add endpoint - 200 OK: {}", usersResponse);
-
         return usersResponse;
     }
 

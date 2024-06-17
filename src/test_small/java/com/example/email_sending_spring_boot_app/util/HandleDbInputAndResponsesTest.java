@@ -11,18 +11,22 @@ import com.example.email_sending_spring_boot_app.repository.EmailRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
+import static com.example.email_sending_spring_boot_app.constants.TestConstants.*;
+import static com.example.email_sending_spring_boot_app.controller.SendEmailTemplateController.EMAIL_LIST;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@RunWith(SpringRunner.class)
 class HandleDbInputAndResponsesTest {
     @InjectMocks
     private HandleDbInputAndResponses handleDbInputAndResponses;
@@ -38,16 +42,16 @@ class HandleDbInputAndResponsesTest {
     @Test
     void addingEmailTest() {
         Email email = new Email(TEST_ID,
-                TEST_EMAIL_1,
-                TEST_EMAIL,
+                EMAIL_1,
+                EMAIL,
                 TEST_SUBJECT,
                 TEST_BODY,
                 TEST_TIMESTAMP);
 
         Email emailActual = handleDbInputAndResponses.addingEmail(TEST_SUBJECT,
                 TEST_BODY,
-                TEST_EMAIL,
-                TEST_EMAIL_1,
+                EMAIL,
+                EMAIL_1,
                 TEST_TIMESTAMP);
         emailActual.setId(TEST_ID);
         assertEquals(email.toString(), emailActual.toString());
@@ -148,7 +152,7 @@ class HandleDbInputAndResponsesTest {
 
     @Test
     void handleSuccessResponseAttachment() {
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{TEST_EMAIL}, TEST_SUBJECT, TEST_BODY, TEST_FILE);
+        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{EMAIL}, TEST_SUBJECT, TEST_BODY, TEST_FILE);
 
         EmailResponse emailResponseExpected = new EmailResponse(
                 STATUS_SUCCESS,
@@ -156,14 +160,14 @@ class HandleDbInputAndResponsesTest {
                 emailData,
                 LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
 
-        EmailResponse emailResponseActual = handleDbInputAndResponses.handleSuccessResponseAttachment(TEST_EMAIL, TEST_SUBJECT, TEST_BODY, TEST_FILE);
+        EmailResponse emailResponseActual = handleDbInputAndResponses.handleSuccessResponseAttachment(EMAIL, TEST_SUBJECT, TEST_BODY, TEST_FILE);
 
         assertEquals(emailResponseExpected.toString(), emailResponseActual.toString());
     }
 
     @Test
     void handleSuccessResponseSimple() {
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{TEST_EMAIL},
+        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{EMAIL},
                 SUBJECT_FOR_SIMPLE_MAIL,
                 BODY_FOR_SIMPLE_MAIL);
 
@@ -173,7 +177,7 @@ class HandleDbInputAndResponsesTest {
                 emailData,
                 LOGGER_MESSAGE_FOR_SIMPLE_MAIL);
 
-        EmailResponse emailResponseActual = handleDbInputAndResponses.handleSuccessResponseSimple(TEST_EMAIL);
+        EmailResponse emailResponseActual = handleDbInputAndResponses.handleSuccessResponseSimple(EMAIL);
 
         assertEquals(emailResponseExpected.toString(), emailResponseActual.toString());
     }
@@ -213,7 +217,7 @@ class HandleDbInputAndResponsesTest {
     void handleSuccessResponseMultipartFile() {
         MockMultipartFile attachment = new MockMultipartFile("attachments", "test.txt", "text/plain", "Attachment Content".getBytes());
 
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{TEST_EMAIL},
+        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{EMAIL},
                 TEST_SUBJECT,
                 TEST_BODY,
                 attachment.getOriginalFilename());
@@ -223,7 +227,7 @@ class HandleDbInputAndResponsesTest {
                 HttpStatus.OK,
                 emailData,
                 LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
-        EmailResponse emailResponseActual = handleDbInputAndResponses.handleSuccessResponseMultipartFile(TEST_EMAIL,
+        EmailResponse emailResponseActual = handleDbInputAndResponses.handleSuccessResponseMultipartFile(EMAIL,
                 TEST_SUBJECT,
                 TEST_BODY,
                 attachment);

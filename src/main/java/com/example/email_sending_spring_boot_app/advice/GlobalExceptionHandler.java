@@ -25,17 +25,16 @@ import java.io.IOException;
 
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.LOGG_EXCEPTION;
 
-
 @ControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @Autowired
-    HandleDbInputAndResponses handleDBInputAndResponses;
+    private HandleDbInputAndResponses handleDBInputAndResponses;
 
     @ExceptionHandler(AuthenticationFailedException.class)
     public ResponseEntity<ErrorResponse> handleAuthenticationFailedException(AuthenticationFailedException ex) {
-        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName());
+        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName(), HttpStatus.INTERNAL_SERVER_ERROR);
         ErrorResponse errorResponse = handleDBInputAndResponses.handleInternalServerError(ex.getClass().getSimpleName());
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -43,14 +42,14 @@ public class GlobalExceptionHandler {
     //Username already exists
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName());
+        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName(), HttpStatus.BAD_REQUEST);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exists");
     }
 
     //Error while saving user in DB
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ErrorResponse> handleDataAccessException(DataAccessException ex) {
-        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName());
+        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName(), HttpStatus.INTERNAL_SERVER_ERROR);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(handleDBInputAndResponses.handleInternalServerError(ex.getClass().getSimpleName()));
     }
@@ -58,7 +57,7 @@ public class GlobalExceptionHandler {
     //Error while saving user in DB
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
-        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName());
+        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName(), HttpStatus.BAD_REQUEST);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(handleDBInputAndResponses.handleBadRequest(ex.getClass().getSimpleName()));
     }
@@ -66,34 +65,35 @@ public class GlobalExceptionHandler {
     //Error while saving user in DB
     @ExceptionHandler(TransactionSystemException.class)
     public ResponseEntity<ErrorResponse> handleTransactionSystemException(TransactionSystemException ex) {
-        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName());
+        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName(), HttpStatus.INTERNAL_SERVER_ERROR);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(handleDBInputAndResponses.handleInternalServerError(ex.getClass().getSimpleName()));
     }
 
     @ExceptionHandler(IOException.class)
     public ResponseEntity<String> handleIOException(IOException ex) {
-        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName());
+        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName(), HttpStatus.INTERNAL_SERVER_ERROR);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(handleDBInputAndResponses.handleInternalServerError(ex.getClass().getSimpleName()).toString());
     }
 
     @ExceptionHandler(MailPreparationException.class)
     public ResponseEntity<ErrorResponse> handleMailPreparationException(MailPreparationException ex) {
-        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName());
+        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName(), HttpStatus.BAD_REQUEST);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(handleDBInputAndResponses.handleBadRequest(ex.getClass().getSimpleName()));
     }
 
     @ExceptionHandler(MessagingException.class)
     public ResponseEntity<ErrorResponse> handleMessagingException(MessagingException ex) {
-        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName());
+        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName(), HttpStatus.INTERNAL_SERVER_ERROR);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(handleDBInputAndResponses.handleInternalServerError(ex.getClass().getSimpleName()));
     }
 
     @ExceptionHandler(MailParseException.class)
     public ResponseEntity<ErrorResponse> handleMessagingException(MailParseException ex) {
+        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName(), HttpStatus.INTERNAL_SERVER_ERROR);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(handleDBInputAndResponses.handleInternalServerError(ex.getClass().getSimpleName()));
     }
@@ -101,14 +101,14 @@ public class GlobalExceptionHandler {
     //Problem with app password
     @ExceptionHandler(MailAuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleMailAuthenticationException(MailAuthenticationException ex) {
-        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName());
+        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName(), HttpStatus.UNAUTHORIZED);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(handleDBInputAndResponses.handleUnauthorized(ex.getClass().getSimpleName()));
     }
 
     @ExceptionHandler(UsernameException.class)
     public ResponseEntity<ErrorResponse> handleUsernameException(UsernameException ex) {
-        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName());
+        LOGGER.info(LOGG_EXCEPTION, ex.getClass().getSimpleName(), HttpStatus.NOT_FOUND);
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(handleDBInputAndResponses.handleUsernameNotFound(ex.getClass().getSimpleName()));
     }

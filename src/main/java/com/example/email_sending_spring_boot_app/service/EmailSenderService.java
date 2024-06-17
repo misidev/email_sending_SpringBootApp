@@ -5,6 +5,9 @@ import com.example.email_sending_spring_boot_app.model.request.EmailRequest;
 import com.example.email_sending_spring_boot_app.model.response.EmailResponse;
 import com.lowagie.text.DocumentException;
 import jakarta.mail.MessagingException;
+import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailParseException;
+import org.springframework.mail.MailPreparationException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -13,9 +16,12 @@ import java.util.List;
 
 public interface EmailSenderService {
 
-   List<Email> getAllEmails();
+    List<Email> getAllEmails();
 
-    EmailResponse sendEmailsWithoutAttachment(String[] toEmail, String subject, String body);
+    EmailResponse sendEmailsWithoutAttachment(String[] toEmail, String subject, String body)
+            throws MailAuthenticationException,
+            MailPreparationException,
+            MailParseException;
 
     void sendEmailsTemplate(EmailRequest emailRequest, String template) throws IOException, MessagingException;
 
@@ -31,11 +37,21 @@ public interface EmailSenderService {
                                     String body,
                                     String file,
                                     String emailContent,
-                                    String template) throws MessagingException, IOException;
+                                    String template)
+            throws MessagingException,
+            IOException,
+            MailAuthenticationException,
+            MailPreparationException,
+            MailParseException;
 
     EmailResponse sendAttachedEmailThroughRequest(String[] toEmail,
                                                   String subject,
                                                   String body,
-                                                  MultipartFile file) throws MessagingException, IOException;
+                                                  MultipartFile file)
+            throws MailParseException,
+            MailPreparationException,
+            MailAuthenticationException,
+            IOException,
+            MessagingException;
 
 }

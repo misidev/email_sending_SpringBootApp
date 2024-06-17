@@ -2,12 +2,14 @@ package com.example.email_sending_spring_boot_app.model;
 
 import com.example.email_sending_spring_boot_app.model.response.ErrorResponse;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
+import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.STATUS_SUCCESS;
+import static com.example.email_sending_spring_boot_app.constants.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@RunWith(SpringRunner.class)
 class ErrorResponseTestSmall {
     @Test
     void testEmailConstructorAndGetters() {

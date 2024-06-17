@@ -5,7 +5,6 @@ import com.example.email_sending_spring_boot_app.model.request.EmailRequest;
 import com.example.email_sending_spring_boot_app.model.response.EmailResponse;
 import com.example.email_sending_spring_boot_app.model.response.EmailTemplateResponse;
 import com.example.email_sending_spring_boot_app.service.EmailSenderService;
-import com.example.email_sending_spring_boot_app.util.HandleDbInputAndResponses;
 import com.lowagie.text.DocumentException;
 import jakarta.annotation.PreDestroy;
 import jakarta.mail.MessagingException;
@@ -32,7 +31,7 @@ import static com.example.email_sending_spring_boot_app.constants.ApplicationCon
 public class SendEmailTemplateController {
     private static final Logger LOGGER = LoggerFactory.getLogger(SendEmailTemplateController.class);
 
-    protected static final String[] EMAIL_LIST = new String[]{"test.service.user888@gmail.com", "testserviceuser888@yahoo.com"};
+    public static final String[] EMAIL_LIST = new String[]{EMAIL, EMAIL_1};
 
     String partOfHtmlContent = null;
 
@@ -42,8 +41,6 @@ public class SendEmailTemplateController {
     private EmailTemplateResponse emailTemplateResponse = null;
     @Autowired
     private HttpServletResponse httpServletResponse;
-
-    private HandleDbInputAndResponses handleDbInputAndResponses;
 
     //send email with template for Knowledge sharing
     @PostMapping("/sendEmailTemplate")

@@ -71,24 +71,21 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     public EmailResponse sendEmailsWithoutAttachment(String[] toEmail,
                                                      String subject,
                                                      String body
-    ) {
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(mailSenderUsername);
-            message.setTo(toEmail);
-            message.setSubject(subject);
-            message.setText(body);
-            javaMailSender.send(message);
+    ) throws MailAuthenticationException, MailPreparationException, MailParseException {
 
-            String emailAddresses = Arrays.toString(toEmail);
-            LOGGER.info("Email is sent from user: {} to {}", mailSenderUsername, emailAddresses);
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(mailSenderUsername);
+        message.setTo(toEmail);
+        message.setSubject(subject);
+        message.setText(body);
+        javaMailSender.send(message);
 
-            emailResponse = handleDBInputAndResponses.handleSuccessResponseSimple(Arrays.toString(toEmail));
+        String emailAddresses = Arrays.toString(toEmail);
+        LOGGER.info("Email is sent from user: {} to {}", mailSenderUsername, emailAddresses);
 
-            handleDBInputAndResponses.saveEmails(toEmail, subject, body, mailSenderUsername);
-        } catch (MailAuthenticationException | MailPreparationException | MailParseException e) {
-            throw e;
-        }
+        emailResponse = handleDBInputAndResponses.handleSuccessResponseSimple(Arrays.toString(toEmail));
+
+        handleDBInputAndResponses.saveEmails(toEmail, subject, body, mailSenderUsername);
 
         return emailResponse;
     }
@@ -187,51 +184,52 @@ public class EmailSenderServiceImpl implements EmailSenderService {
                                            String body,
                                            String file,
                                            String emailContent,
-                                           String template) throws MessagingException, IOException {
-        try {
-            MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
-            mimeMessageHelper.setTo(toEmail);
-            mimeMessageHelper.setSubject(subject);
+                                           String template) throws MessagingException,
+            IOException,
+            MailAuthenticationException,
+            MailPreparationException,
+            MailParseException {
 
-            if (body != null) {
-                mimeMessageHelper.setText(body);
-            }
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
+        mimeMessageHelper.setTo(toEmail);
+        mimeMessageHelper.setSubject(subject);
 
-            if (emailContent != null) {
-                mimeMessageHelper.setText(emailContent, true);
-            }
-
-            if (file != null) {
-                Path path = Paths.get(file);
-                byte[] content = Files.readAllBytes(path);
-                Resource attachment = new ByteArrayResource(content);
-
-                String attachmentName = file.substring(file.lastIndexOf("/") + 1);
-
-                mimeMessageHelper.addAttachment(attachmentName, attachment);
-            }
-            if (validEmail(toEmail)) {
-                javaMailSender.send(message);
-            } else {
-                throw new MessagingException();
-            }
-
-            if (subject.equals(APP_STARTING_SUBJECT)) {
-                emailResponse = handleDBInputAndResponses.handleSuccessResponseAppStarts();
-            } else if (subject.equals(APP_SHUTDOWN_SUBJECT)) {
-                emailResponse = handleDBInputAndResponses.handleSuccessResponseShutdown();
-            } else {
-                emailResponse = handleDBInputAndResponses.handleSuccessResponseAttachment(toEmail, subject, body, file);
-            }
-
-            LOGGER.info("Email with attachment is sent from user: {} to {}", mailSenderUsername, toEmail);
-
-            handleDBInputAndResponses.saveEmail(toEmail, subject, template, mailSenderUsername);
-        } catch (MessagingException | IOException | MailAuthenticationException | MailPreparationException |
-                 MailParseException e) {
-            throw e;
+        if (body != null) {
+            mimeMessageHelper.setText(body);
         }
+
+        if (emailContent != null) {
+            mimeMessageHelper.setText(emailContent, true);
+        }
+
+        if (file != null) {
+            Path path = Paths.get(file);
+            byte[] content = Files.readAllBytes(path);
+            Resource attachment = new ByteArrayResource(content);
+
+            String attachmentName = file.substring(file.lastIndexOf("/") + 1);
+
+            mimeMessageHelper.addAttachment(attachmentName, attachment);
+        }
+        if (validEmail(toEmail)) {
+            javaMailSender.send(message);
+        } else {
+            throw new MessagingException();
+        }
+
+        if (subject.equals(APP_STARTING_SUBJECT)) {
+            emailResponse = handleDBInputAndResponses.handleSuccessResponseAppStarts();
+        } else if (subject.equals(APP_SHUTDOWN_SUBJECT)) {
+            emailResponse = handleDBInputAndResponses.handleSuccessResponseShutdown();
+        } else {
+            emailResponse = handleDBInputAndResponses.handleSuccessResponseAttachment(toEmail, subject, body, file);
+        }
+
+        LOGGER.info("Email with attachment is sent from user: {} to {}", mailSenderUsername, toEmail);
+
+        handleDBInputAndResponses.saveEmail(toEmail, subject, template, mailSenderUsername);
+
         return emailResponse;
     }
 
@@ -239,35 +237,36 @@ public class EmailSenderServiceImpl implements EmailSenderService {
                                                          String subject,
                                                          String body,
                                                          MultipartFile file
-    ) throws MessagingException, IOException {
-        try {
-            MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
-            mimeMessageHelper.setTo(toEmail);
-            mimeMessageHelper.setSubject(subject);
-            mimeMessageHelper.setText(body);
+    ) throws MailParseException,
+            MailPreparationException,
+            MailAuthenticationException,
+            IOException,
+            MessagingException {
 
-            if (file != null) {
-                LOGGER.info("Attachment Name: {},  Attachment Content Type {}: ", file.getOriginalFilename(), file.getContentType());
-                byte[] content = file.getBytes();
-                Resource attachment = new ByteArrayResource(content);
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
+        mimeMessageHelper.setTo(toEmail);
+        mimeMessageHelper.setSubject(subject);
+        mimeMessageHelper.setText(body);
 
-                mimeMessageHelper.addAttachment(Objects.requireNonNull(file.getOriginalFilename()), attachment);
-            } else {
-                LOGGER.info("No attachment provided.");
-            }
+        if (file != null) {
+            LOGGER.info("Attachment Name: {},  Attachment Content Type {}: ", file.getOriginalFilename(), file.getContentType());
+            byte[] content = file.getBytes();
+            Resource attachment = new ByteArrayResource(content);
 
-            javaMailSender.send(message);
-            String emailAddresses = Arrays.toString(toEmail);
-            LOGGER.info("Email with attachment is sent from user: {} to {}", mailSenderUsername, emailAddresses);
-
-            emailResponse = handleDBInputAndResponses.handleSuccessResponseMultipartFile(Arrays.toString(toEmail), subject, body, file);
-
-            handleDBInputAndResponses.saveEmails(toEmail, subject, body, mailSenderUsername);
-        } catch (MailParseException | MailPreparationException | MailAuthenticationException | IOException |
-                 MessagingException e) {
-            throw e;
+            mimeMessageHelper.addAttachment(Objects.requireNonNull(file.getOriginalFilename()), attachment);
+        } else {
+            LOGGER.info("No attachment provided.");
         }
+
+        javaMailSender.send(message);
+        String emailAddresses = Arrays.toString(toEmail);
+        LOGGER.info("Email with attachment is sent from user: {} to {}", mailSenderUsername, emailAddresses);
+
+        emailResponse = handleDBInputAndResponses.handleSuccessResponseMultipartFile(Arrays.toString(toEmail), subject, body, file);
+
+        handleDBInputAndResponses.saveEmails(toEmail, subject, body, mailSenderUsername);
+
         return emailResponse;
     }
 

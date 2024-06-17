@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.EMAIL;
+import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.EMAIL_1;
+
 @Component
 public class DefaultUserInitializer implements CommandLineRunner {
 
@@ -21,16 +24,19 @@ public class DefaultUserInitializer implements CommandLineRunner {
         // Check if there are any users in the database
         if (userRepository.count() == 0) {
             // Add default users if the database is empty
+            String username = "Alex";
+
             User user1 = new User();
-            user1.setUsername("Alex");
-            user1.setEmail("test.service.user888@gmail.com");
+            user1.setUsername(username);
+            user1.setEmail(EMAIL);
 
             User user2 = new User();
-            user2.setUsername("Alex");
-            user2.setEmail("testserviceuser888@yahoo.com");
+            user2.setUsername(username);
+            user2.setEmail(EMAIL_1);
 
             userRepository.save(user1);
             userRepository.save(user2);
         }
     }
+
 }
