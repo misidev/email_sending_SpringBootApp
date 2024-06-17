@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Application Has Started Successfully</title>
+</head>
+<body>
+<p>Dear <span th:text="${user}"></span>,</p>
+
+<p>We are pleased to inform you that your application <strong th:text="${appName}"></strong> has been <strong th:text="${applicationStatus}"></strong>. <span th:text="${description}"></span></p>
+
+<p><strong>Application Details:</strong></p>
+<ul id="startMarker">
+    <li><strong>Application Name:</strong> <span th:text="${appName}"></span></li>
+    <li><strong>Application ID:</strong> <span th:text="${appId}"></span></li>
+    <li><strong>Application status:</strong> <span th:text="${status}"></span></li>
+    <li><strong>Start Date and time :</strong> <span th:text="${date}"></span></li>
+    <li><strong>Environment:</strong> <span th:text="${environment}" ></span></li>
+</ul >
+
+<p>If you have any questions or encounter any issues, please don't hesitate to contact our support team at <a href="mailto:support@example.com">support@example.com</a>.</p>
+
+<p>Thank you for choosing our service.</p>
+
+<p>
+    Best regards,<br>
+    <img th:src="${signature}" alt="Signature" src="${signature}">
+</p>
+</body>
+</html>

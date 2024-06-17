@@ -1,67 +1,57 @@
 package com.example.email_sending_spring_boot_app.service;
 
+import com.example.email_sending_spring_boot_app.model.entity.Email;
+import com.example.email_sending_spring_boot_app.model.request.EmailRequest;
+import com.example.email_sending_spring_boot_app.model.response.EmailResponse;
+import com.lowagie.text.DocumentException;
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
+import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailParseException;
+import org.springframework.mail.MailPreparationException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
-@Service
-public class EmailSenderService {
-    @Autowired
-    private JavaMailSender javaMailSender;
-    private static final Logger logger = LoggerFactory.getLogger(EmailSenderService.class);
-    @Value("${spring.mail.username}")
-    String mailSenderUsername;
+public interface EmailSenderService {
 
-    public void sendSimpleEmail(String[] toEmail,
-                                String subject,
-                                String body
-    ) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(mailSenderUsername);
-        message.setTo(toEmail);
-        message.setText(body);
-        message.setSubject(subject);
-        javaMailSender.send(message);
+    List<Email> getAllEmails();
 
-        logger.info("Email is sent from user: " + mailSenderUsername + " to " + Arrays.toString(toEmail));
-    }
+    EmailResponse sendEmailsWithoutAttachment(String[] toEmail, String subject, String body)
+            throws MailAuthenticationException,
+            MailPreparationException,
+            MailParseException;
 
-    public Resource sendAttachedEmail(String[] toEmail,
-                                      String subject,
-                                      String body,
-                                      String file
-    ) throws MessagingException, IOException {
-        MimeMessage message = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
-        mimeMessageHelper.setTo(toEmail);
-        mimeMessageHelper.setSubject(subject);
-        mimeMessageHelper.setText(body);
+    void sendEmailsTemplate(EmailRequest emailRequest, String template) throws IOException, MessagingException;
 
-        Path path = Paths.get(file);
-        byte[] content = Files.readAllBytes(path);
-        Resource attachment = new ByteArrayResource(content);
+    EmailResponse sendEmailsAppStartsShutdown(String[] toEmails,
+                                              String subject,
+                                              String applicationStatus,
+                                              String template,
+                                              Date currentDateAndTime,
+                                              String signature) throws IOException, DocumentException, MessagingException;
 
-        mimeMessageHelper.addAttachment("Attachment.jpg", attachment);
+    EmailResponse sendAttachedEmail(String toEmail,
+                                    String subject,
+                                    String body,
+                                    String file,
+                                    String emailContent,
+                                    String template)
+            throws MessagingException,
+            IOException,
+            MailAuthenticationException,
+            MailPreparationException,
+            MailParseException;
 
-        javaMailSender.send(message);
-        logger.info("Email with attachment is sent from user: " + mailSenderUsername + " to " + Arrays.toString(toEmail));
-
-        return attachment;
-    }
+    EmailResponse sendAttachedEmailThroughRequest(String[] toEmail,
+                                                  String subject,
+                                                  String body,
+                                                  MultipartFile file)
+            throws MailParseException,
+            MailPreparationException,
+            MailAuthenticationException,
+            IOException,
+            MessagingException;
 
 }
