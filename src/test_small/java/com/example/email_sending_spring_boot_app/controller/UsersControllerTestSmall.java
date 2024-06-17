@@ -7,25 +7,30 @@ import com.example.email_sending_spring_boot_app.repository.UserRepository;
 import com.example.email_sending_spring_boot_app.util.HandleDbInputAndResponses;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
+import static com.example.email_sending_spring_boot_app.constants.TestConstants.TEST_USERNAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
-class UsersControllerSmallTest {
+@ExtendWith(SpringExtension.class)
+@RunWith(SpringRunner.class)
+class UsersControllerTestSmall {
+
     @Mock
     private UserRepository userRepository;
-
     @InjectMocks
     private UsersController usersController;
 
@@ -38,8 +43,8 @@ class UsersControllerSmallTest {
 
     @BeforeEach
     public void setUp() {
-        user1 = new User(1L, TEST_USERNAME, TEST_EMAIL);
-        user2 = new User(2L, TEST_USERNAME, TEST_EMAIL_1);
+        user1 = new User(1L, TEST_USERNAME, EMAIL);
+        user2 = new User(2L, TEST_USERNAME, EMAIL_1);
         users = Arrays.asList(user1, user2);
     }
 

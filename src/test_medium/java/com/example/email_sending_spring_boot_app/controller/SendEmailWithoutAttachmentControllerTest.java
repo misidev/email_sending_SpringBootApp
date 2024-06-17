@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.TEST_EMAIL;
+import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.EMAIL;
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.USER;
 
 @SpringBootTest
@@ -38,7 +38,7 @@ class SendEmailWithoutAttachmentControllerTest {
     @Test
     void testSentEmailWithoutAttachment() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/mail/sendEmailWithoutAttachment")
-                        .param(USER, TEST_EMAIL)
+                        .param(USER, EMAIL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
