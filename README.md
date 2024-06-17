@@ -7,7 +7,7 @@ How to **run** service on local:
 - Clone the repository.
 - Configure SMTP server details in the application.properties file. Change username and password explained here
    [SPRING_BOOT_MAIL.md
-  ](https://github.com/misidev/email_sending_SpringBootApp/blob/b8863ace73ae0f9b091af5ba6c76e212b356572c/SPRING_BOOT_MAIL.md)
+  ](https://github.com/misidev/email_sending_SpringBootApp/blob/main/SPRING_BOOT_MAIL.md)
 
 - Configure java 18 SDK and apache-maven-3.9.6
 - Run the Spring Boot application.
