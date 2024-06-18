@@ -133,10 +133,6 @@ This SendEmailWithAttachmentController handles requests related to sending email
 
   ![email-send-attachment-local.png](src/main/resources/images/images-doc-md/email-send-attachment-local.png)
 
-
-These methods trigger the sending of emails to notify one or more defined email addresses that the application is
-starting or shutting down.
-
 ### 3. Send Emails with template 
 This SendEmailTemplateController handles requests related to sending emails with templates.
 
