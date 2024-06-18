@@ -279,9 +279,6 @@ This method sends an email with template for Knowledge Transfer.
 
 - **Example email**:
   ![email-app-status-shutdown.png](src/main/resources/images/images-doc-md/email-app-status-shutdown.png)
-  ![pdf-app-status.png](src/main/resources/images/images-doc-md/pdf-app-status.png)
-  ![app-status-shutdown-content.png](src/main/resources/images/images-doc-md/app-status-shutdown-content.png)
-
 
 ### 4. Get Emails
 This GetAllEmailsController handles requests related to adding user in db and getting all users from db.
