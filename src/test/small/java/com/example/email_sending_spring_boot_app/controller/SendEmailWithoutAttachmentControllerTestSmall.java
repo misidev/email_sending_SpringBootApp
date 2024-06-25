@@ -32,7 +32,8 @@ class SendEmailWithoutAttachmentControllerTestSmall {
     void testSentEmail() {
         EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{EMAIL},
                 SUBJECT_FOR_SIMPLE_MAIL,
-                BODY_FOR_SIMPLE_MAIL);
+                BODY_FOR_SIMPLE_MAIL, 
+                null);
 
         emailResponseExpected = new EmailResponse(
                 STATUS_SUCCESS,
