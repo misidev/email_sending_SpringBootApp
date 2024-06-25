@@ -431,7 +431,7 @@ Hibernate: insert into email (body,recipient,sender,subject,timestamp,id) values
 | Small     | 92       | 65        | 64      |
 | Medium    |          |           |         |
 
-<span style="color:red">issue running whole package with coverage! fix in progress!</span>
+<span style="color:red">Issue running whole package with coverage - Medium tests! fix in progress!</span>
 
 
 PLANED IMPROVEMENT:
@@ -446,6 +446,4 @@ PLANED IMPROVEMENT:
  - Change documentation - OpenAPI(Swagger)
  - Create UI for sending email - choosing email template, users to send email, subject,etc. (connect to myapp frontend?)
 
-
-
-
+Feel free to add "Issues" with improvement ideas!
