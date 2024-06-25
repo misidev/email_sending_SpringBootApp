@@ -16,17 +16,18 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.Date;
 
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
 
-@Controller
+@RestController
 @RequestMapping("/api/v1/mail")
 public class SendEmailTemplateController {
     private static final Logger LOGGER = LoggerFactory.getLogger(SendEmailTemplateController.class);
@@ -50,7 +51,7 @@ public class SendEmailTemplateController {
 
         return ResponseEntity.ok(emailTemplateResponse);
     }
-
+@Transactional
     //Email one or more defined email addresses to notify that the application has started running
     @PostMapping("/sendAppStartEmail")
     @EventListener(ApplicationReadyEvent.class)

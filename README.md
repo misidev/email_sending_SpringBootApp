@@ -440,7 +440,6 @@ PLANED IMPROVEMENT:
  - Enhance the DB using Liquibase, add constraints, indexes, and improve exception handling related to DB,
  - Handle validation for input data for adding email or user in DB,
  - Add more user information in user profile (check if users table from myapp service (user registration/login) can be connected with users table from spring-mail-service or call GET to myapp service and retrieve users data),
- - Implement Lombok.
  - Sending translated emails
  - Add rate limiting configuration in config for spring_cloud_getaway instead bucket4j config
  - Change documentation - OpenAPI(Swagger)
