@@ -51,7 +51,7 @@ public class SendEmailTemplateController {
 
         return ResponseEntity.ok(emailTemplateResponse);
     }
-@Transactional
+
     //Email one or more defined email addresses to notify that the application has started running
     @PostMapping("/sendAppStartEmail")
     @EventListener(ApplicationReadyEvent.class)
