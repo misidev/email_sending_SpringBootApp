@@ -169,7 +169,8 @@ class HandleDbInputAndResponsesTest {
     void handleSuccessResponseSimple() {
         EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{EMAIL},
                 SUBJECT_FOR_SIMPLE_MAIL,
-                BODY_FOR_SIMPLE_MAIL);
+                BODY_FOR_SIMPLE_MAIL,
+                null);
 
         EmailResponse emailResponseExpected = new EmailResponse(
                 STATUS_SUCCESS,
