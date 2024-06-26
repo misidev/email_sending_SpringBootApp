@@ -102,7 +102,6 @@ This SendEmailWithAttachmentController handles requests related to sending email
 - **Description**: Sends an email with an attachment to the specified user.
 - **Request Parameters**:
     - `user` (required): The email address of the recipient.
-    - `user` (required): The email address of the recipient.
     - `subject` (required): The subject of the email.
     - `body` (required): The body of the email.
 - **Response**:
