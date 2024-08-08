@@ -427,10 +427,8 @@ Hibernate: insert into email (body,recipient,sender,subject,timestamp,id) values
 
 | Test Type | Class, % | Method, % | Line, % |
 |-----------|----------|-----------|---------|
-| Small     | 92       | 65        | 64      |
-| Medium    |          |           |         |
-
-<span style="color:red">Issue running whole package with coverage - Medium tests! fix in progress!</span>
+| Small     | 92       | 73        | 62      |
+| Medium    | 80       | 66        | 68      |
 
 
 PLANED IMPROVEMENT:

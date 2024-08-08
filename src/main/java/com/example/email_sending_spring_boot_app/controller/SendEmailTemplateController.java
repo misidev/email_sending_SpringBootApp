@@ -9,6 +9,7 @@ import com.lowagie.text.DocumentException;
 import jakarta.annotation.PreDestroy;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.catalina.filters.AddDefaultCharsetFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
 
@@ -42,6 +44,9 @@ public class SendEmailTemplateController {
     @Autowired
     private HttpServletResponse httpServletResponse;
 
+    //    private EmailResponse emailResponse = null;
+    private CompletableFuture<EmailResponse> emailResponse = null;
+
     //send email with template for Knowledge sharing
     @PostMapping("/sendEmailTemplate")
     public ResponseEntity<EmailTemplateResponse> sendEmail(@RequestBody EmailRequest emailRequest) throws IOException, MessagingException {
@@ -54,10 +59,10 @@ public class SendEmailTemplateController {
     //Email one or more defined email addresses to notify that the application has started running
     @PostMapping("/sendAppStartEmail")
     @EventListener(ApplicationReadyEvent.class)
-    public ResponseEntity<EmailResponse> triggerMail() throws IOException, DocumentException, MessagingException {
+    public CompletableFuture<ResponseEntity<EmailResponse>> triggerMail() throws IOException, DocumentException, MessagingException {
         Date currentDateAndTime = new Date();
 
-        EmailResponse emailResponse = emailSenderService.sendEmailsAppStartsShutdown(EMAIL_LIST,
+        emailResponse = emailSenderService.sendEmailsAppStartsShutdownAsyncWrapper(EMAIL_LIST,
                 APP_STARTING_SUBJECT,
                 APP_STARTING_STATUS,
                 TEMPLATE_START_SHUTDOWN,
@@ -66,16 +71,16 @@ public class SendEmailTemplateController {
 
         LOGGER.info(APP_STARTING);
 
-        return ResponseEntity.ok(emailResponse);
+        return emailResponse.thenApply(ResponseEntity::ok);
     }
 
     //Email one or more defined email addresses to notify that the application has started to shut down
     @PostMapping("/sendShutdownEmail")
     @PreDestroy
-    public ResponseEntity<EmailResponse> triggerMailOnShutdown() throws IOException, DocumentException, MessagingException {
+    public CompletableFuture<ResponseEntity<EmailResponse>> triggerMailOnShutdown() throws IOException, DocumentException, MessagingException {
         Date currentDateAndTime = new Date();
 
-        EmailResponse emailResponse = emailSenderService.sendEmailsAppStartsShutdown(EMAIL_LIST,
+        emailResponse = emailSenderService.sendEmailsAppStartsShutdownAsyncWrapper(EMAIL_LIST,
                 APP_SHUTDOWN_SUBJECT,
                 APP_SHUTDOWN_STATUS,
                 TEMPLATE_START_SHUTDOWN,
@@ -83,7 +88,7 @@ public class SendEmailTemplateController {
                 SIGNATURE);
 
         LOGGER.info(ApplicationConstants.APP_SHUTDOWN);
-        return ResponseEntity.ok(emailResponse);
+        return emailResponse.thenApply(ResponseEntity::ok);
     }
 
     public EmailTemplateResponse handleSuccessResponseTemplate(EmailRequest emailRequest) {
@@ -109,5 +114,33 @@ public class SendEmailTemplateController {
         LOGGER.info("Email response for /sendEmail endpoint - 200 OK: {}", emailTemplateResponse);
         return emailTemplateResponse;
     }
+
+//    public static EmailTemplateResponse wrapSuccess(EmailRequest emailRequest) {
+//        EmailRequest data = new EmailRequest(emailRequest.getToEmail(),
+//                emailRequest.getSubject(),
+//                emailRequest.getEventName(),
+//                emailRequest.getEventDate(),
+//                emailRequest.getEventTime(),
+//                emailRequest.getEventLocation(),
+//                emailRequest.getEventRegistrationLink(),
+//                emailRequest.getRecipientName(),
+//                emailRequest.getCompanyName(),
+//                emailRequest.getYourName(),
+//                emailRequest.getYourJobTitle(),
+//                emailRequest.getSignature());
+//
+//        return new EmailTemplateResponse(
+//                STATUS_SUCCESS,
+//                HttpStatus.OK,
+//                data,
+//                LOGGER_MESSAGE_FOR_SIMPLE_MAIL
+//        );
+//    }
+//
+//    public EmailTemplateResponse handleSuccessResponseTemplate(EmailRequest emailRequest) {
+//        EmailTemplateResponse emailTemplateResponse = wrapSuccess(emailRequest);
+//        LOGGER.info("Email response for /sendEmail endpoint - 200 OK: {}", emailResponse);
+//        return emailTemplateResponse;
+//    }
 
 }

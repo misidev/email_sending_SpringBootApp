@@ -12,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -26,13 +29,16 @@ class SendEmailWithoutAttachmentControllerTestSmall {
     private SendEmailWithoutAttachmentController sendEmailWithoutAttachmentController;
     EmailResponse emailResponseExpected = null;
 
-    ResponseEntity<EmailResponse> emailResponseActual = null;
+    CompletableFuture<EmailResponse> futureResponseEntityExpected;
+    ResponseEntity<EmailResponse> responseEntity;
+
+    CompletableFuture<ResponseEntity<EmailResponse>> futureResponseFromController;
 
     @Test
-    void testSentEmail() {
+    void testSentEmail() throws ExecutionException, InterruptedException {
         EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{EMAIL},
                 SUBJECT_FOR_SIMPLE_MAIL,
-                BODY_FOR_SIMPLE_MAIL, 
+                BODY_FOR_SIMPLE_MAIL,
                 null);
 
         emailResponseExpected = new EmailResponse(
@@ -41,13 +47,18 @@ class SendEmailWithoutAttachmentControllerTestSmall {
                 emailData,
                 LOGGER_MESSAGE_FOR_SIMPLE_MAIL);
 
-        when(emailSenderService.sendEmailsWithoutAttachment(new String[]{EMAIL},
+        futureResponseEntityExpected = CompletableFuture.completedFuture(emailResponseExpected);
+
+
+        when(emailSenderService.sendEmailWithoutAttachmentAsyncWrapper(new String[]{EMAIL},
                 SUBJECT_FOR_SIMPLE_MAIL,
-                BODY_FOR_SIMPLE_MAIL)).thenReturn(emailResponseExpected);
+                BODY_FOR_SIMPLE_MAIL)).thenReturn(futureResponseEntityExpected);
 
-        emailResponseActual = sendEmailWithoutAttachmentController.sentEmail(EMAIL);
+        futureResponseFromController = sendEmailWithoutAttachmentController.sentEmail(EMAIL);
 
-        assertEquals(emailResponseExpected.toString(), String.valueOf(emailResponseActual.getBody()));
+        responseEntity = futureResponseFromController.get();
+
+        assertEquals(emailResponseExpected.toString(), String.valueOf(responseEntity.getBody()));
     }
 
 }

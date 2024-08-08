@@ -16,6 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
 import static com.example.email_sending_spring_boot_app.constants.TestConstants.*;
@@ -33,7 +34,11 @@ class SendEmailTemplateControllerTestSmall {
     @InjectMocks
     private SendEmailTemplateController sendEmailTemplateController;
     private EmailResponse emailResponseExpected = null;
-    private ResponseEntity<EmailResponse> emailResponseActual = null;
+
+    CompletableFuture<EmailResponse> futureResponseEntityExpected;
+    ResponseEntity<EmailResponse> responseEntity;
+
+    CompletableFuture<ResponseEntity<EmailResponse>> futureResponseFromController;
 
     @Test
     void sendEmailSmallTest() throws Exception {
@@ -74,16 +79,19 @@ class SendEmailTemplateControllerTestSmall {
                 emailData,
                 APP_STARTING);
 
-        when(emailSenderService.sendEmailsAppStartsShutdown(any(),
+        futureResponseEntityExpected = CompletableFuture.completedFuture(emailResponseExpected);
+
+        when(emailSenderService.sendEmailsAppStartsShutdownAsyncWrapper(any(),
                 any(),
                 any(),
                 any(),
                 any(Date.class),
-                any())).thenReturn(emailResponseExpected);
+                any())).thenReturn(futureResponseEntityExpected);
 
-        emailResponseActual = sendEmailTemplateController.triggerMail();
+        futureResponseFromController = sendEmailTemplateController.triggerMail();
+        responseEntity = futureResponseFromController.get();
 
-        assertEquals(emailResponseExpected.toString(), String.valueOf(emailResponseActual.getBody()));
+        assertEquals(emailResponseExpected.toString(), String.valueOf(responseEntity.getBody()));
     }
 
     @Test
@@ -99,16 +107,20 @@ class SendEmailTemplateControllerTestSmall {
                 emailData,
                 APP_SHUTDOWN);
 
-        when(emailSenderService.sendEmailsAppStartsShutdown(any(),
+        futureResponseEntityExpected = CompletableFuture.completedFuture(emailResponseExpected);
+
+        when(emailSenderService.sendEmailsAppStartsShutdownAsyncWrapper(any(),
                 any(),
                 any(),
                 any(),
                 any(Date.class),
-                any())).thenReturn(emailResponseExpected);
+                any())).thenReturn(futureResponseEntityExpected);
 
-        emailResponseActual = sendEmailTemplateController.triggerMailOnShutdown();
+        futureResponseFromController = sendEmailTemplateController.triggerMailOnShutdown();
 
-        assertEquals(emailResponseExpected.toString(), String.valueOf(emailResponseActual.getBody()));
+        responseEntity = futureResponseFromController.get();
+
+        assertEquals(emailResponseExpected.toString(), String.valueOf(responseEntity.getBody()));
     }
 
 }

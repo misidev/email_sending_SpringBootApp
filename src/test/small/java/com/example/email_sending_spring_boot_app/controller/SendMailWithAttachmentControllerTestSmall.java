@@ -13,6 +13,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.concurrent.CompletableFuture;
+
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
 import static com.example.email_sending_spring_boot_app.constants.TestConstants.TEST_BODY;
 import static com.example.email_sending_spring_boot_app.constants.TestConstants.TEST_SUBJECT;
@@ -30,7 +32,10 @@ class SendMailWithAttachmentControllerTestSmall {
 
     EmailResponse emailResponseExpected = null;
 
-    ResponseEntity<EmailResponse> emailResponseActual = null;
+    CompletableFuture<EmailResponse> futureResponseEntityExpected;
+    ResponseEntity<EmailResponse> responseEntity;
+
+    CompletableFuture<ResponseEntity<EmailResponse>> futureResponseFromController;
 
     @Test
     void testSentEmail() throws Exception {
@@ -49,17 +54,21 @@ class SendMailWithAttachmentControllerTestSmall {
                 emailData,
                 LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
 
-        when(emailSenderService.sendAttachedEmailThroughRequest(new String[]{EMAIL},
+        futureResponseEntityExpected = CompletableFuture.completedFuture(emailResponseExpected);
+
+        when(emailSenderService.sendAttachedEmailThroughRequestAsyncWrapper(new String[]{EMAIL},
                 TEST_SUBJECT,
                 TEST_BODY,
-                attachment)).thenReturn(emailResponseExpected);
+                attachment)).thenReturn(futureResponseEntityExpected);
 
-        emailResponseActual = sendMailWithAttachmentController.sentEmail(EMAIL,
+        futureResponseFromController = sendMailWithAttachmentController.sentEmail(EMAIL,
                 TEST_SUBJECT,
                 TEST_BODY,
                 attachment);
 
-        assertEquals(emailResponseExpected.toString(), String.valueOf(emailResponseActual.getBody()));
+        responseEntity = futureResponseFromController.get();
+
+        assertEquals(emailResponseExpected.toString(), String.valueOf(responseEntity.getBody()));
     }
 
     @Test
@@ -75,19 +84,23 @@ class SendMailWithAttachmentControllerTestSmall {
                 emailData,
                 LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
 
-        when(emailSenderService.sendAttachedEmail(EMAIL,
+        futureResponseEntityExpected = CompletableFuture.completedFuture(emailResponseExpected);
+
+        when(emailSenderService.sendEmailWithAttachmentAsyncWrapper(EMAIL,
                 SUBJECT_FOR_MAIL_WITH_ATTACHMENT,
                 BODY_FOR_MAIL_WITH_ATTACHMENT,
                 FILE_FOR_MAIL_WITH_ATTACHMENT,
                 null,
-                null)).thenReturn(emailResponseExpected);
+                null)).thenReturn(futureResponseEntityExpected);
 
-        emailResponseActual = sendMailWithAttachmentController.sentEmailWithAttachment(EMAIL,
+        futureResponseFromController = sendMailWithAttachmentController.sentEmailWithAttachment(EMAIL,
                 emailData.getSubject(),
                 emailData.getBody(),
                 emailData.getFile());
 
-        assertEquals(emailResponseExpected.toString(), String.valueOf(emailResponseActual.getBody()));
+        responseEntity = futureResponseFromController.get();
+
+        assertEquals(emailResponseExpected.toString(), String.valueOf(responseEntity.getBody()));
     }
 
 }

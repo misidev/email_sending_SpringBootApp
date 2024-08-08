@@ -64,22 +64,8 @@ public class TestConstants {
             "\"body\":\"Post request for user with attachment is triggered!\"," +
             "\"file\":\"src/main/resources/images/misidev_logo.png\"}," +
             "\"message\":\"POST REQUEST email with attachment.\"}";
-    public static final String TEST_SHUTDOWN_EMAIL = STATUS_SUCCESS_RESPONSE +
-            CODE_OK_RESPONSE +
-            DATA_RESPONSE +
-            EMAIL_TO_RESPONSE +
-            "\"subject\":\"App is shutting down!\"," +
-            "\"body\":\"Shutdown of the app started!\"," +
-            "\"file\":\"src/main/resources/images/misidev_signature.png\"}," +
-            "\"message\":\"Email to notify that the application has started to shut down\"}";
-    public static final String TEST_APP_STARTS_EMAIL = STATUS_SUCCESS_RESPONSE +
-            CODE_OK_RESPONSE +
-            DATA_RESPONSE +
-            EMAIL_TO_RESPONSE +
-            "\"subject\":\"App is started\"," +
-            "\"body\":\"App is successfully started!\"," +
-            "\"file\":\"src/main/resources/images/misidev_signature.png\"}," +
-            "\"message\":\"Email to notify that the application has started running\"}";
+
+    public static final String TEST_EMAIL_WITHOUT_ATTACHMENT = "{\"status\":\"success\",\"code\":\"OK\",\"data\":{\"toEmail\":[\"[testserviceuser888@yahoo.com]\"],\"subject\":\"User notification\",\"body\":\"Post request for user is triggered!\",\"file\":null},\"message\":\"POST REQUEST simple email.\"}";
 
     public static final String TEST_EMAIL_RESPONSE = STATUS_SUCCESS_RESPONSE +
             CODE_OK_RESPONSE +
@@ -89,4 +75,23 @@ public class TestConstants {
             "\"body\":\"Test body\"," +
             "\"file\":\"test.txt\"}," +
             "\"message\":\"POST REQUEST email with attachment.\"}";
+
+    public static final String TEST_APP_STARTS_EMAIL = STATUS_SUCCESS_RESPONSE +
+            CODE_OK_RESPONSE +
+            DATA_RESPONSE +
+            EMAIL_TO_RESPONSE +
+            "\"subject\":\"App is started\"," +
+            "\"body\":\"App is successfully started!\"," +
+            "\"file\":\"src/main/resources/images/misidev_signature.png\"}," +
+            "\"message\":\"Email to notify that the application has started running\"}";
+
+    public static final String TEST_SHUTDOWN_EMAIL = STATUS_SUCCESS_RESPONSE +
+            CODE_OK_RESPONSE +
+            DATA_RESPONSE +
+            EMAIL_TO_RESPONSE +
+            "\"subject\":\"App is shutting down!\"," +
+            "\"body\":\"Shutdown of the app started!\"," +
+            "\"file\":\"src/main/resources/images/misidev_signature.png\"}," +
+            "\"message\":\"Email to notify that the application has started to shut down\"}";
+
 }

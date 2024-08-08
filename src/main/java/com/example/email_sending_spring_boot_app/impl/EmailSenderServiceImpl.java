@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailParseException;
 import org.springframework.mail.MailPreparationException;
@@ -34,6 +35,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
@@ -41,6 +43,7 @@ import static com.example.email_sending_spring_boot_app.constants.ApplicationCon
 @Service
 public class EmailSenderServiceImpl implements EmailSenderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailSenderServiceImpl.class);
+
 
     @Value("${spring.mail.username}")
     String mailSenderUsername;
@@ -56,6 +59,9 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     @Autowired
     private TemplateEngine templateEngine;
 
+    @Autowired
+    private TaskExecutor taskExecutor;
+
     private final Context context = new Context();
 
     //for adding emails in db
@@ -66,7 +72,6 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     private UsersService userService;
 
     private EmailResponse emailResponse = null;
-
 
     public EmailResponse sendEmailsWithoutAttachment(String[] toEmail,
                                                      String subject,
@@ -79,7 +84,6 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         message.setSubject(subject);
         message.setText(body);
         javaMailSender.send(message);
-
         String emailAddresses = Arrays.toString(toEmail);
         LOGGER.info("Email is sent from user: {} to {}", mailSenderUsername, emailAddresses);
 
@@ -126,6 +130,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
             // Send the email
             emailResponse = sendAttachedEmail(toEmail, subject, null, filePdf, htmlContent, template);
+
         }
         return emailResponse;
     }
@@ -151,34 +156,6 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         }
     }
 
-    public void addSignature(String signature) throws IOException {
-        if (signature != null) {
-            Path path = Paths.get(signature);
-            byte[] content = Files.readAllBytes(path);
-
-            String base64Content = Base64.getEncoder().encodeToString(content);
-            String dataUrl = "data:image/png;base64," + base64Content;
-
-            context.setVariable("signature", dataUrl);
-        }
-    }
-
-    public String findUsername(String email) {
-        User user = userService.findByEmail(email);
-        if (user != null && user.getEmail().equals(email)) {
-            return user.getUsername();
-        } else {
-            throw new UsernameException();
-        }
-    }
-
-    public boolean validEmail(String email) {
-        String emailRegex = "^[\\w\\.-]+@[a-zA-Z\\d\\.-]+\\.[a-zA-Z]{2,}$";
-        Pattern pattern = Pattern.compile(emailRegex);
-        return pattern.matcher(email).matches();
-    }
-
-
     public EmailResponse sendAttachedEmail(String toEmail,
                                            String subject,
                                            String body,
@@ -189,6 +166,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             MailAuthenticationException,
             MailPreparationException,
             MailParseException {
+
 
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
@@ -268,10 +246,104 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         handleDBInputAndResponses.saveEmails(toEmail, subject, body, mailSenderUsername);
 
         return emailResponse;
+
+    }
+
+    public CompletableFuture<EmailResponse> sendEmailWithoutAttachmentAsyncWrapper(String[] toEmail,
+                                                                                   String subject,
+                                                                                   String body) throws MailAuthenticationException,
+            MailPreparationException,
+            MailParseException {
+        return CompletableFuture.supplyAsync(() -> sendEmailsWithoutAttachment(toEmail, subject, body), taskExecutor);
+    }
+
+    public CompletableFuture<EmailResponse> sendEmailWithAttachmentAsyncWrapper(String toEmail,
+                                                                                String subject,
+                                                                                String body,
+                                                                                String file,
+                                                                                String emailContent,
+                                                                                String template) throws
+            MailAuthenticationException,
+            MailPreparationException,
+            MailParseException {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return sendAttachedEmail(toEmail,
+                        subject,
+                        body,
+                        file,
+                        emailContent,
+                        template);
+            } catch (MessagingException | IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    public CompletableFuture<EmailResponse> sendEmailsAppStartsShutdownAsyncWrapper(String[] toEmails,
+                                                                                    String subject,
+                                                                                    String applicationStatus,
+                                                                                    String template,
+                                                                                    Date currentDateAndTime,
+                                                                                    String signature) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return sendEmailsAppStartsShutdown(toEmails,
+                        subject,
+                        applicationStatus,
+                        template,
+                        currentDateAndTime,
+                        signature);
+            } catch (MessagingException | IOException | DocumentException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    public CompletableFuture<EmailResponse> sendAttachedEmailThroughRequestAsyncWrapper(String[] toEmail,
+                                                                                        String subject,
+                                                                                        String body,
+                                                                                        MultipartFile file) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return sendAttachedEmailThroughRequest(toEmail,
+                        subject,
+                        body, file);
+            } catch (MessagingException | IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public List<Email> getAllEmails() {
         return emailRepository.findAll();
+    }
+
+    public void addSignature(String signature) throws IOException {
+        if (signature != null) {
+            Path path = Paths.get(signature);
+            byte[] content = Files.readAllBytes(path);
+
+            String base64Content = Base64.getEncoder().encodeToString(content);
+            String dataUrl = "data:image/png;base64," + base64Content;
+
+            context.setVariable("signature", dataUrl);
+        }
+    }
+
+    public String findUsername(String email) {
+        User user = userService.findByEmail(email);
+        if (user != null && user.getEmail().equals(email)) {
+            return user.getUsername();
+        } else {
+            throw new UsernameException();
+        }
+    }
+
+    public boolean validEmail(String email) {
+        String emailRegex = "^[\\w\\.-]+@[a-zA-Z\\d\\.-]+\\.[a-zA-Z]{2,}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        return pattern.matcher(email).matches();
     }
 
 }

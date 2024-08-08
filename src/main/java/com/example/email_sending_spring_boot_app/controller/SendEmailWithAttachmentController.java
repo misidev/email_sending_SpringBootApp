@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
 
@@ -20,7 +21,7 @@ import static com.example.email_sending_spring_boot_app.constants.ApplicationCon
 public class SendEmailWithAttachmentController {
     private static final Logger LOGGER = LoggerFactory.getLogger(SendEmailWithAttachmentController.class);
 
-    private EmailResponse emailResponse = null;
+    private CompletableFuture<EmailResponse> emailResponse = null;
 
     @Autowired
     private EmailSenderService emailSenderService;
@@ -30,27 +31,27 @@ public class SendEmailWithAttachmentController {
 
     //MultipartFile attachments
     @PostMapping("/sendEmail")
-    public ResponseEntity<EmailResponse> sentEmail(@RequestParam(name = USER, required = true) String user,
-                                                   @RequestParam(name = SUBJECT, required = true) String subject,
-                                                   @RequestParam(name = BODY, required = true) String body,
-                                                   @RequestBody(required = true) MultipartFile attachments) throws MessagingException, IOException {
+    public CompletableFuture<ResponseEntity<EmailResponse>> sentEmail(@RequestParam(name = USER, required = true) String user,
+                                                                                         @RequestParam(name = SUBJECT, required = true) String subject,
+                                                                                         @RequestParam(name = BODY, required = true) String body,
+                                                                                         @RequestBody(required = true) MultipartFile attachments) throws MessagingException, IOException {
 
-        emailResponse = emailSenderService.sendAttachedEmailThroughRequest(new String[]{user}, subject, body, attachments);
+        emailResponse = emailSenderService.sendAttachedEmailThroughRequestAsyncWrapper(new String[]{user}, subject, body, attachments);
 
-        return ResponseEntity.ok(emailResponse);
+        return emailResponse.thenApply(ResponseEntity::ok);
     }
 
     //send attachment from path
     @PostMapping("/sendEmailWithAttachment")
-    public ResponseEntity<EmailResponse> sentEmailWithAttachment(@RequestParam(name = USER, required = true) String user,
-                                                                 @RequestParam(name = SUBJECT, required = true) String subject,
-                                                                 @RequestParam(name = BODY, required = true) String body,
-                                                                 @RequestParam(name = FILE, required = true) String file) throws MessagingException, IOException {
+    public CompletableFuture<ResponseEntity<EmailResponse>> sentEmailWithAttachment(@RequestParam(name = USER, required = true) String user,
+                                                                                                       @RequestParam(name = SUBJECT, required = true) String subject,
+                                                                                                       @RequestParam(name = BODY, required = true) String body,
+                                                                                                       @RequestParam(name = FILE, required = true) String file) throws MessagingException, IOException {
 
-        emailResponse = emailSenderService.sendAttachedEmail(user, subject, body, file, null, null);
+        emailResponse = emailSenderService.sendEmailWithAttachmentAsyncWrapper(user, subject, body, file, null, null);
 
         LOGGER.info(LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
-        return ResponseEntity.ok(emailResponse);
+        return emailResponse.thenApply(ResponseEntity::ok);
     }
 
 }

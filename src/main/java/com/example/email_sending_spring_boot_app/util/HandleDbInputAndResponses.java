@@ -224,7 +224,7 @@ public class HandleDbInputAndResponses {
     public EmailResponse handleSuccessResponseSimple(String user) {
         EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{user},
                 SUBJECT_FOR_SIMPLE_MAIL,
-                BODY_FOR_SIMPLE_MAIL,null);
+                BODY_FOR_SIMPLE_MAIL, null);
 
         emailResponse = new EmailResponse(
                 STATUS_SUCCESS,

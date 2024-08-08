@@ -8,31 +8,38 @@ import jakarta.mail.MessagingException;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailParseException;
 import org.springframework.mail.MailPreparationException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface EmailSenderService {
 
+    @Async("taskExecutor")
     List<Email> getAllEmails();
 
-    EmailResponse sendEmailsWithoutAttachment(String[] toEmail, String subject, String body)
+    @Async("taskExecutor")
+    CompletableFuture<EmailResponse> sendEmailWithoutAttachmentAsyncWrapper(String[] toEmail, String subject, String body)
             throws MailAuthenticationException,
             MailPreparationException,
             MailParseException;
 
+    @Async("taskExecutor")
     void sendEmailsTemplate(EmailRequest emailRequest, String template) throws IOException, MessagingException;
 
-    EmailResponse sendEmailsAppStartsShutdown(String[] toEmails,
+    @Async("taskExecutor")
+    CompletableFuture<EmailResponse> sendEmailsAppStartsShutdownAsyncWrapper(String[] toEmails,
                                               String subject,
                                               String applicationStatus,
                                               String template,
                                               Date currentDateAndTime,
                                               String signature) throws IOException, DocumentException, MessagingException;
 
-    EmailResponse sendAttachedEmail(String toEmail,
+    @Async("taskExecutor")
+    CompletableFuture<EmailResponse> sendEmailWithAttachmentAsyncWrapper(String toEmail,
                                     String subject,
                                     String body,
                                     String file,
@@ -44,7 +51,8 @@ public interface EmailSenderService {
             MailPreparationException,
             MailParseException;
 
-    EmailResponse sendAttachedEmailThroughRequest(String[] toEmail,
+    @Async("taskExecutor")
+    CompletableFuture<EmailResponse> sendAttachedEmailThroughRequestAsyncWrapper(String[] toEmail,
                                                   String subject,
                                                   String body,
                                                   MultipartFile file)
