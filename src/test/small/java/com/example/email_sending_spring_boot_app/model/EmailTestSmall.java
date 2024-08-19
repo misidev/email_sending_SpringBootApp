@@ -15,12 +15,14 @@ class EmailTestSmall {
 
     @Test
     void testEmailConstructorAndGetters() {
-        Email email = new Email(TEST_ID,
-                EMAIL,
-                EMAIL_1,
-                TEST_SUBJECT,
-                TEST_BODY,
-                TEST_TIMESTAMP);
+        Email email = Email.builder()
+                .id(TEST_ID)
+                .sender(EMAIL)
+                .recipient(EMAIL_1)
+                .subject(TEST_SUBJECT)
+                .body(TEST_BODY)
+                .timestamp(TEST_TIMESTAMP)
+                .build();
 
         assertEquals(TEST_ID, email.getId());
         assertEquals(EMAIL, email.getSender());
@@ -32,7 +34,7 @@ class EmailTestSmall {
 
     @Test
     void testSetters() {
-        Email email = new Email();
+        Email email = Email.builder().build();
 
         email.setId(TEST_ID);
         email.setSender(EMAIL);

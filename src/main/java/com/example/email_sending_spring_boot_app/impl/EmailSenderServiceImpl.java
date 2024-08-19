@@ -44,7 +44,8 @@ import static com.example.email_sending_spring_boot_app.constants.ApplicationCon
 public class EmailSenderServiceImpl implements EmailSenderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailSenderServiceImpl.class);
 
-
+    public static final String DESCRIPTION_APP_STARTING = "This email confirms that everything is up and running smoothly.";
+    public static final String DESCRIPTION_APP_SHUTDOWN = "This email confirms that service is stopped running.";
     @Value("${spring.mail.username}")
     String mailSenderUsername;
 
@@ -332,7 +333,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     }
 
     public String findUsername(String email) {
-        User user = userService.findByEmail(email);
+        User user = userService.getUserByEmail(email);
         if (user != null && user.getEmail().equals(email)) {
             return user.getUsername();
         } else {

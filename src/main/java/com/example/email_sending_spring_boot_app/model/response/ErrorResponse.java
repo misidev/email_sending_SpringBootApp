@@ -7,6 +7,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ErrorResponse {
 
     private Error error;
@@ -16,6 +17,7 @@ public class ErrorResponse {
     @ToString
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     public static class Error {
         String status;
         Integer code;

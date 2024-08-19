@@ -2,7 +2,6 @@ package com.example.email_sending_spring_boot_app.controller;
 
 import com.example.email_sending_spring_boot_app.service.EmailSenderService;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,7 +25,7 @@ class SendEmailTemplateControllerTest {
     @Mock
     private EmailSenderService emailSenderService;
 
-    @InjectMocks
+    @Mock
     private SendEmailTemplateController sendEmailTemplateController;
 
     @Test
@@ -53,7 +52,6 @@ class SendEmailTemplateControllerTest {
 
     @Test
     void testSentEmailAppShutdown() throws Exception {
-
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/mail/sendShutdownEmail")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

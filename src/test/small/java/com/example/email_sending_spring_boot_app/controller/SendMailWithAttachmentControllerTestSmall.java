@@ -44,15 +44,20 @@ class SendMailWithAttachmentControllerTestSmall {
                 "text/plain",
                 "Attachment Content".getBytes());
 
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{EMAIL},
-                TEST_SUBJECT,
-                TEST_BODY,
-                attachment.getOriginalFilename());
+        EmailResponse.EmailData emailData = EmailResponse.EmailData.builder()
+                .toEmail(new String[]{EMAIL})
+                .subject(TEST_SUBJECT)
+                .body(TEST_BODY)
+                .file(attachment.getOriginalFilename())
+                .build();
 
-        emailResponseExpected = new EmailResponse(STATUS_SUCCESS,
-                HttpStatus.OK,
-                emailData,
-                LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
+        emailResponseExpected = EmailResponse.builder()
+                .status(STATUS_SUCCESS)
+                .code(HttpStatus.OK)
+                .data(emailData)
+                .message(LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT)
+                .build();
+
 
         futureResponseEntityExpected = CompletableFuture.completedFuture(emailResponseExpected);
 
@@ -73,16 +78,20 @@ class SendMailWithAttachmentControllerTestSmall {
 
     @Test
     void testSentEmailWithAttachment() throws Exception {
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{EMAIL},
-                SUBJECT_FOR_MAIL_WITH_ATTACHMENT,
-                BODY_FOR_MAIL_WITH_ATTACHMENT,
-                FILE_FOR_MAIL_WITH_ATTACHMENT);
+        EmailResponse.EmailData emailData = EmailResponse.EmailData.builder()
+                .toEmail(new String[]{EMAIL})
+                .subject(SUBJECT_FOR_MAIL_WITH_ATTACHMENT)
+                .body(BODY_FOR_MAIL_WITH_ATTACHMENT)
+                .file(FILE_FOR_MAIL_WITH_ATTACHMENT)
+                .build();
 
-        emailResponseExpected = new EmailResponse(
-                STATUS_SUCCESS,
-                HttpStatus.OK,
-                emailData,
-                LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
+        emailResponseExpected = EmailResponse.builder()
+                .status(STATUS_SUCCESS)
+                .code(HttpStatus.OK)
+                .data(emailData)
+                .message(LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT)
+                .build();
+
 
         futureResponseEntityExpected = CompletableFuture.completedFuture(emailResponseExpected);
 

@@ -42,24 +42,27 @@ class SendEmailTemplateControllerTestSmall {
 
     @Test
     void sendEmailSmallTest() throws Exception {
-        EmailRequest emailRequest = new EmailRequest(new String[]{EMAIL},
-                TEST_SUBJECT,
-                TEST_EVENT_NAME,
-                TEST_EVENT_DATE,
-                TEST_EVENT_TIME,
-                TEST_EVENT_LOCATION,
-                TEST_REGISTRATION_LINK,
-                TEST_REGISTRATION_NAME,
-                TEST_COMPANY_NAME,
-                TEST_YOUR_NAME,
-                TEST_YOUR_JOB_TITLE,
-                SIGNATURE);
+        EmailRequest emailRequest = EmailRequest.builder()
+                .toEmail(new String[]{EMAIL})
+                .subject(TEST_SUBJECT)
+                .eventName(TEST_EVENT_NAME)
+                .eventDate(TEST_EVENT_DATE)
+                .eventTime(TEST_EVENT_TIME)
+                .eventLocation(TEST_EVENT_LOCATION)
+                .eventRegistrationLink(TEST_REGISTRATION_LINK)
+                .recipientName(TEST_REGISTRATION_NAME)
+                .companyName(TEST_COMPANY_NAME)
+                .yourName(TEST_YOUR_NAME)
+                .yourJobTitle(TEST_YOUR_JOB_TITLE)
+                .signature(SIGNATURE)
+                .build();
 
-        EmailTemplateResponse emailTemplateResponseExpected = new EmailTemplateResponse(
-                STATUS_SUCCESS,
-                HttpStatus.OK,
-                emailRequest,
-                LOGGER_MESSAGE_FOR_SIMPLE_MAIL);
+        EmailTemplateResponse emailTemplateResponseExpected = EmailTemplateResponse.builder()
+                .status(STATUS_SUCCESS)
+                .code(HttpStatus.OK)
+                .data(emailRequest)
+                .message(LOGGER_MESSAGE_FOR_SIMPLE_MAIL)
+                .build();
 
         ResponseEntity<EmailTemplateResponse> emailTemplateResponseActual = sendEmailTemplateController.sendEmail(emailRequest);
 
@@ -68,16 +71,19 @@ class SendEmailTemplateControllerTestSmall {
 
     @Test
     void testTriggerMail() throws Exception {
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData(SendEmailTemplateController.EMAIL_LIST,
-                APP_STARTING_SUBJECT,
-                APP_STARTING_BODY,
-                SIGNATURE);
+        EmailResponse.EmailData emailData = EmailResponse.EmailData.builder()
+                .toEmail(SendEmailTemplateController.EMAIL_LIST)
+                .subject(APP_STARTING_SUBJECT)
+                .body(APP_STARTING_BODY)
+                .file(SIGNATURE)
+                .build();
 
-        emailResponseExpected = new EmailResponse(
-                STATUS_SUCCESS,
-                HttpStatus.OK,
-                emailData,
-                APP_STARTING);
+        emailResponseExpected = EmailResponse.builder()
+                .status(STATUS_SUCCESS)
+                .code(HttpStatus.OK)
+                .data(emailData)
+                .message(APP_STARTING)
+                .build();
 
         futureResponseEntityExpected = CompletableFuture.completedFuture(emailResponseExpected);
 
@@ -96,16 +102,19 @@ class SendEmailTemplateControllerTestSmall {
 
     @Test
     void testTriggerMailOnShutdown() throws Exception {
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData(SendEmailTemplateController.EMAIL_LIST,
-                APP_SHUTDOWN_SUBJECT,
-                APP_SHUTDOWN_BODY,
-                SIGNATURE);
+        EmailResponse.EmailData emailData = EmailResponse.EmailData.builder()
+                .toEmail(SendEmailTemplateController.EMAIL_LIST)
+                .subject(APP_SHUTDOWN_SUBJECT)
+                .body(APP_SHUTDOWN_BODY)
+                .file(SIGNATURE)
+                .build();
 
-        emailResponseExpected = new EmailResponse(
-                STATUS_SUCCESS,
-                HttpStatus.OK,
-                emailData,
-                APP_SHUTDOWN);
+        emailResponseExpected = EmailResponse.builder()
+                .status(STATUS_SUCCESS)
+                .code(HttpStatus.OK)
+                .data(emailData)
+                .message(APP_SHUTDOWN)
+                .build();
 
         futureResponseEntityExpected = CompletableFuture.completedFuture(emailResponseExpected);
 

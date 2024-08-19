@@ -26,13 +26,15 @@ public class DefaultUserInitializer implements CommandLineRunner {
             // Add default users if the database is empty
             String username = "Alex";
 
-            User user1 = new User();
-            user1.setUsername(username);
-            user1.setEmail(EMAIL);
+            User user1 = User.builder()
+                    .username(username)
+                    .email(EMAIL)
+                    .build();
 
-            User user2 = new User();
-            user2.setUsername(username);
-            user2.setEmail(EMAIL_1);
+            User user2 = User.builder()
+                    .username(username)
+                    .email(EMAIL_1)
+                    .build();
 
             userRepository.save(user1);
             userRepository.save(user2);

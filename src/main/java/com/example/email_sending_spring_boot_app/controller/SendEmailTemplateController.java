@@ -9,7 +9,6 @@ import com.lowagie.text.DocumentException;
 import jakarta.annotation.PreDestroy;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.catalina.filters.AddDefaultCharsetFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +32,15 @@ import static com.example.email_sending_spring_boot_app.constants.ApplicationCon
 public class SendEmailTemplateController {
     private static final Logger LOGGER = LoggerFactory.getLogger(SendEmailTemplateController.class);
 
+    //    public static final String[] EMAIL_LIST = new String[]{EMAIL};
     public static final String[] EMAIL_LIST = new String[]{EMAIL, EMAIL_1};
 
     String partOfHtmlContent = null;
+
+    public static final String TEMPLATE_EMAIL = "email_template.html";
+
+    public static final String APP_STARTING_STATUS = "successfully started";
+    public static final String APP_SHUTDOWN_STATUS = "shut down";
 
     @Autowired
     private EmailSenderService emailSenderService;

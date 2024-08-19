@@ -36,16 +36,19 @@ class SendEmailWithoutAttachmentControllerTestSmall {
 
     @Test
     void testSentEmail() throws ExecutionException, InterruptedException {
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{EMAIL},
-                SUBJECT_FOR_SIMPLE_MAIL,
-                BODY_FOR_SIMPLE_MAIL,
-                null);
+        EmailResponse.EmailData emailData = EmailResponse.EmailData.builder()
+                .toEmail(new String[]{EMAIL})
+                .subject(SUBJECT_FOR_SIMPLE_MAIL)
+                .body(BODY_FOR_SIMPLE_MAIL)
+                .file(null)
+                .build();
 
-        emailResponseExpected = new EmailResponse(
-                STATUS_SUCCESS,
-                HttpStatus.OK,
-                emailData,
-                LOGGER_MESSAGE_FOR_SIMPLE_MAIL);
+        emailResponseExpected = EmailResponse.builder()
+                .status(STATUS_SUCCESS)
+                .code(HttpStatus.OK)
+                .data(emailData)
+                .message(LOGGER_MESSAGE_FOR_SIMPLE_MAIL)
+                .build();
 
         futureResponseEntityExpected = CompletableFuture.completedFuture(emailResponseExpected);
 

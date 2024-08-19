@@ -32,7 +32,7 @@ public class TestConstants {
     public static final String DATA_RESPONSE = "\"data\":";
     public static final String EMAIL_TO_RESPONSE = "{\"toEmail\":[\"testserviceuser888@yahoo.com\",\"test.service.user888@gmail.com\"],";
     public static final String FILE_NULL_RESPONSE = "\"file\":null},";
-    public static final String TEST_REQUEST_BODY_ADD = "{\"username\":\"Alex\", \"email\":\"testserviceuser888@yahoo.com\"}";
+    public static final String TEST_REQUEST_BODY_ADD = "{\"username\":\"Alex\", \"email\":\"milicasimovic77@yahoo.com\"}";
     public static final String TEST_REQUEST_BODY_TEMPLATE =
             "{\n" +
                     "    \"toEmail\":[\"testserviceuser888@yahoo.com\"],\n" +

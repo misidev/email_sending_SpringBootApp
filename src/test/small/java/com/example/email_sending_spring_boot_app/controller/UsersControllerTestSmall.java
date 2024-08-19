@@ -43,17 +43,29 @@ class UsersControllerTestSmall {
 
     @BeforeEach
     public void setUp() {
-        user1 = new User(1L, TEST_USERNAME, EMAIL);
-        user2 = new User(2L, TEST_USERNAME, EMAIL_1);
+        user1 =  User.builder()
+                .id(1L)
+                .username(TEST_USERNAME)
+                .email(EMAIL)
+                .build();
+
+        user2 =  User.builder()
+                .id(2L)
+                .username(TEST_USERNAME)
+                .email(EMAIL_1)
+                .build();
+
         users = Arrays.asList(user1, user2);
     }
 
     @Test
     void testGetAllUsers() {
-        UsersResponse usersResponse = new UsersResponse(STATUS_SUCCESS,
-                HttpStatus.OK,
-                users,
-                LOGGER_MESSAGE_GET_ALL_USERS);
+        UsersResponse usersResponse =  UsersResponse.builder()
+                .status(STATUS_SUCCESS)
+                .code(HttpStatus.OK)
+                .user(users)
+                .message(LOGGER_MESSAGE_GET_ALL_USERS)
+                .build();
 
         when(userRepository.findAll()).thenReturn(users);
         when(handleDbInputAndResponses.handleSuccessResponseGetUsers(users)).thenReturn(usersResponse);
@@ -66,11 +78,12 @@ class UsersControllerTestSmall {
 
     @Test
     void testAddAllUsers() {
-        UserResponse userResponse = new UserResponse(STATUS_SUCCESS,
-                HttpStatus.OK,
-                user1,
-                LOGGER_MESSAGE_ADD_USER);
-
+        UserResponse userResponse = UserResponse.builder()
+                .status(STATUS_SUCCESS)
+                .code(HttpStatus.OK)
+                .user(user1)
+                .message(LOGGER_MESSAGE_ADD_USER)
+                .build();
 
         when(userRepository.save(any())).thenReturn(user1);
         when(handleDbInputAndResponses.handleSuccessResponseAddUser(user1)).thenReturn(userResponse);

@@ -13,15 +13,19 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Email {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String sender;
-    private String recipient;
-    private String subject;
-    private String body;
-    private LocalDateTime timestamp;
 
+    private String sender;
+
+    private String recipient;
+
+    private String subject;
+
+    private String body;
+
+    private LocalDateTime timestamp;
 }

@@ -40,12 +40,14 @@ class HandleDbInputAndResponsesTest {
 
     @Test
     void addingEmailTest() {
-        Email email = new Email(TEST_ID,
-                EMAIL_1,
-                EMAIL,
-                TEST_SUBJECT,
-                TEST_BODY,
-                TEST_TIMESTAMP);
+        Email email = Email.builder()
+                .id(TEST_ID)
+                .sender(EMAIL_1)
+                .recipient(EMAIL)
+                .subject(TEST_SUBJECT)
+                .body(TEST_BODY)
+                .timestamp(TEST_TIMESTAMP)
+                .build();
 
         Email emailActual = handleDbInputAndResponses.addingEmail(TEST_SUBJECT,
                 TEST_BODY,
@@ -58,13 +60,14 @@ class HandleDbInputAndResponsesTest {
 
     @Test
     void handleUnauthorized() {
-        ErrorResponse.Error error = new ErrorResponse.Error(
-                STATUS_FAILURE,
-                HttpServletResponse.SC_UNAUTHORIZED,
-                MESSAGE_UNAUTHORIZED,
-                DETAILS_UNAUTHORIZED + "MailAuthenticationException");
+        ErrorResponse.Error error = ErrorResponse.Error.builder()
+                .status(STATUS_FAILURE)
+                .code(HttpServletResponse.SC_UNAUTHORIZED)
+                .message(MESSAGE_UNAUTHORIZED)
+                .details(DETAILS_UNAUTHORIZED + "MailAuthenticationException")
+                .build();
 
-        ErrorResponse errorResponseExpected = new ErrorResponse(error);
+        ErrorResponse errorResponseExpected = ErrorResponse.builder().error(error).build();
         ErrorResponse errorResponseActual = handleDbInputAndResponses.handleUnauthorized("MailAuthenticationException");
 
         assertEquals(errorResponseExpected.toString(), errorResponseActual.toString());
@@ -72,13 +75,14 @@ class HandleDbInputAndResponsesTest {
 
     @Test
     void handleInternalServerError() {
-        ErrorResponse.Error error = new ErrorResponse.Error(
-                STATUS_FAILURE,
-                HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                MESSAGE_INTERNAL_SERVER_ERROR,
-                DETAILS_INTERNAL_SERVER_ERROR + "UsernameException");
+        ErrorResponse.Error error = ErrorResponse.Error.builder()
+                .status(STATUS_FAILURE)
+                .code(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+                .message(MESSAGE_INTERNAL_SERVER_ERROR)
+                .details(DETAILS_INTERNAL_SERVER_ERROR + "UsernameException")
+                .build();
 
-        ErrorResponse errorResponseExpected = new ErrorResponse(error);
+        ErrorResponse errorResponseExpected = ErrorResponse.builder().error(error).build();
         ErrorResponse errorResponseActual = handleDbInputAndResponses.handleInternalServerError("UsernameException");
 
         assertEquals(errorResponseExpected.toString(), errorResponseActual.toString());
@@ -86,13 +90,14 @@ class HandleDbInputAndResponsesTest {
 
     @Test
     void testHandleBadRequest() {
-        ErrorResponse.Error error = new ErrorResponse.Error(
-                STATUS_FAILURE,
-                HttpServletResponse.SC_BAD_REQUEST,
-                MESSAGE_BAD_REQUEST,
-                DETAILS_BAD_REQUEST + "ConstraintViolationException");
+        ErrorResponse.Error error = ErrorResponse.Error.builder()
+                .status(STATUS_FAILURE)
+                .code(HttpServletResponse.SC_BAD_REQUEST)
+                .message(MESSAGE_BAD_REQUEST)
+                .details(DETAILS_BAD_REQUEST + "ConstraintViolationException")
+                .build();
 
-        ErrorResponse errorResponseExpected = new ErrorResponse(error);
+        ErrorResponse errorResponseExpected = ErrorResponse.builder().error(error).build();
         ErrorResponse errorResponseActual = handleDbInputAndResponses.handleBadRequest("ConstraintViolationException");
 
         assertEquals(errorResponseExpected.toString(), errorResponseActual.toString());
@@ -100,13 +105,14 @@ class HandleDbInputAndResponsesTest {
 
     @Test
     void testHandleUsernameNotFound() {
-        ErrorResponse.Error error = new ErrorResponse.Error(
-                STATUS_FAILURE,
-                HttpServletResponse.SC_NOT_FOUND,
-                MESSAGE_NOT_FOUND,
-                DETAILS_NOT_FOUND + "UsernameException");
+        ErrorResponse.Error error = ErrorResponse.Error.builder()
+                .status(STATUS_FAILURE)
+                .code(HttpServletResponse.SC_NOT_FOUND)
+                .message(MESSAGE_NOT_FOUND)
+                .details(DETAILS_NOT_FOUND + "UsernameException")
+                .build();
 
-        ErrorResponse errorResponseExpected = new ErrorResponse(error);
+        ErrorResponse errorResponseExpected = ErrorResponse.builder().error(error).build();
         ErrorResponse errorResponseActual = handleDbInputAndResponses.handleUsernameNotFound("UsernameException");
 
         assertEquals(errorResponseExpected.toString(), errorResponseActual.toString());
@@ -184,8 +190,11 @@ class HandleDbInputAndResponsesTest {
 
     @Test
     void testHandleSuccessResponseAddUse() {
-
-        User user = new User(1L, "Alex", "testserviceuser888@yahoo.com");
+        User user = User.builder()
+                .id(TEST_ID)
+                .username("Alex")
+                .email("testserviceuser888@yahoo.com")
+                .build();
 
         UserResponse userResponseExpected = new UserResponse(STATUS_SUCCESS,
                 HttpStatus.OK,
@@ -199,8 +208,12 @@ class HandleDbInputAndResponsesTest {
 
     @Test
     void testHandleSuccessResponseGetUsers() {
+        User user = User.builder()
+                .id(TEST_ID)
+                .username("Alex")
+                .email("testserviceuser888@yahoo.com")
+                .build();
 
-        User user = new User(1L, "Alex", "testserviceuser888@yahoo.com");
         List<User> users = List.of(user);
 
         UsersResponse userResponseExpected = new UsersResponse(STATUS_SUCCESS,
@@ -227,6 +240,7 @@ class HandleDbInputAndResponsesTest {
                 HttpStatus.OK,
                 emailData,
                 LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
+
         EmailResponse emailResponseActual = handleDbInputAndResponses.handleSuccessResponseMultipartFile(EMAIL,
                 TEST_SUBJECT,
                 TEST_BODY,
