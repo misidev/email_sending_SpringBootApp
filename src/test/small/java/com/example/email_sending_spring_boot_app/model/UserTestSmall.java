@@ -16,7 +16,7 @@ class UserTestSmall {
 
     @Test
     void testUserConstructorAndGetters() {
-        User user =  User.builder()
+        User user = User.builder()
                 .id(TEST_ID)
                 .username(TEST_USERNAME)
                 .email(EMAIL)

@@ -32,19 +32,19 @@ public interface EmailSenderService {
 
     @Async("taskExecutor")
     CompletableFuture<EmailResponse> sendEmailsAppStartsShutdownAsyncWrapper(String[] toEmails,
-                                              String subject,
-                                              String applicationStatus,
-                                              String template,
-                                              Date currentDateAndTime,
-                                              String signature) throws IOException, DocumentException, MessagingException;
+                                                                             String subject,
+                                                                             String applicationStatus,
+                                                                             String template,
+                                                                             Date currentDateAndTime,
+                                                                             String signature) throws IOException, DocumentException, MessagingException;
 
     @Async("taskExecutor")
     CompletableFuture<EmailResponse> sendEmailWithAttachmentAsyncWrapper(String toEmail,
-                                    String subject,
-                                    String body,
-                                    String file,
-                                    String emailContent,
-                                    String template)
+                                                                         String subject,
+                                                                         String body,
+                                                                         String file,
+                                                                         String emailContent,
+                                                                         String template)
             throws MessagingException,
             IOException,
             MailAuthenticationException,
@@ -53,9 +53,9 @@ public interface EmailSenderService {
 
     @Async("taskExecutor")
     CompletableFuture<EmailResponse> sendAttachedEmailThroughRequestAsyncWrapper(String[] toEmail,
-                                                  String subject,
-                                                  String body,
-                                                  MultipartFile file)
+                                                                                 String subject,
+                                                                                 String body,
+                                                                                 MultipartFile file)
             throws MailParseException,
             MailPreparationException,
             MailAuthenticationException,

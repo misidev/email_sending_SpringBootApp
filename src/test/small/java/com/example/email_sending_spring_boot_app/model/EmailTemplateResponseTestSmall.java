@@ -6,7 +6,8 @@ import org.junit.runner.RunWith;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
+import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.EMAIL;
+import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.STATUS_SUCCESS;
 import static com.example.email_sending_spring_boot_app.constants.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,7 +24,7 @@ class EmailTemplateResponseTestSmall {
                 .file(TEST_FILE)
                 .build();
 
-        EmailResponse emailTemplateResponse  = EmailResponse.builder()
+        EmailResponse emailTemplateResponse = EmailResponse.builder()
                 .status(STATUS_SUCCESS)
                 .code(HttpStatus.valueOf(CODE_OK))
                 .data(emailData)
@@ -48,7 +49,7 @@ class EmailTemplateResponseTestSmall {
                 .file(TEST_FILE)
                 .build();
 
-        EmailResponse emailTemplateResponse  = EmailResponse.builder()
+        EmailResponse emailTemplateResponse = EmailResponse.builder()
                 .data(emailData)
                 .build();
 

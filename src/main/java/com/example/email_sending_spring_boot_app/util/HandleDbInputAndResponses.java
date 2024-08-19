@@ -133,7 +133,7 @@ public class HandleDbInputAndResponses {
         return emailResponse;
     }
 
-    
+
     public EmailResponse handleSuccessResponseAttachment(String user, String subject, String body, String file) {
         EmailResponse.EmailData emailData = EmailResponse.EmailData.builder()
                 .toEmail(new String[]{user})
@@ -152,7 +152,6 @@ public class HandleDbInputAndResponses {
         LOGGER.info("Email response for /sendEmailWithAttachment endpoint - 200 OK: {}", emailResponse);
         return emailResponse;
     }
-
 
 
     public EmailResponse handleSuccessResponseMultipartFile(String user, String subject, String body, MultipartFile attachments) {
@@ -310,7 +309,6 @@ public class HandleDbInputAndResponses {
         LOGGER.info("Email response for /sendShutdownEmail endpoint - 200 OK: {}", emailResponse);
         return emailResponse;
     }
-
 
 
 }

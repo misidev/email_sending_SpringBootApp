@@ -32,7 +32,6 @@ import static com.example.email_sending_spring_boot_app.constants.ApplicationCon
 public class SendEmailTemplateController {
     private static final Logger LOGGER = LoggerFactory.getLogger(SendEmailTemplateController.class);
 
-    //    public static final String[] EMAIL_LIST = new String[]{EMAIL};
     public static final String[] EMAIL_LIST = new String[]{EMAIL, EMAIL_1};
 
     String partOfHtmlContent = null;

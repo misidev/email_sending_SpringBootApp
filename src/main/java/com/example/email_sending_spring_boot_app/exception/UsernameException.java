@@ -5,10 +5,11 @@ import com.example.email_sending_spring_boot_app.model.response.ErrorResponse;
 public class UsernameException extends RuntimeException {
     private ErrorResponse errorResponse;
 
-    public UsernameException(String message, ErrorResponse  errorResponse) {
+    public UsernameException(String message, ErrorResponse errorResponse) {
         super(message);
-        this.errorResponse= errorResponse;
+        this.errorResponse = errorResponse;
     }
+
 
     public UsernameException() {
 

@@ -5,6 +5,7 @@ public class ApplicationConstants {
     private ApplicationConstants() {
         throw new AssertionError();
     }
+
     public static final String EMAIL = "testserviceuser888@yahoo.com";
     public static final String EMAIL_1 = "test.service.user888@gmail.com";
     public static final String FILE_FOR_MAIL_WITH_ATTACHMENT = "src/main/resources/images/misidev_logo.png";

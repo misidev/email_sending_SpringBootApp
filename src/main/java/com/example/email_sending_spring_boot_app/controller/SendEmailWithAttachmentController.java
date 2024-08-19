@@ -32,9 +32,9 @@ public class SendEmailWithAttachmentController {
     //MultipartFile attachments
     @PostMapping("/sendEmail")
     public CompletableFuture<ResponseEntity<EmailResponse>> sentEmail(@RequestParam(name = USER, required = true) String user,
-                                                                                         @RequestParam(name = SUBJECT, required = true) String subject,
-                                                                                         @RequestParam(name = BODY, required = true) String body,
-                                                                                         @RequestBody(required = true) MultipartFile attachments) throws MessagingException, IOException {
+                                                                      @RequestParam(name = SUBJECT, required = true) String subject,
+                                                                      @RequestParam(name = BODY, required = true) String body,
+                                                                      @RequestBody(required = true) MultipartFile attachments) throws MessagingException, IOException {
 
         emailResponse = emailSenderService.sendAttachedEmailThroughRequestAsyncWrapper(new String[]{user}, subject, body, attachments);
 
@@ -44,9 +44,9 @@ public class SendEmailWithAttachmentController {
     //send attachment from path
     @PostMapping("/sendEmailWithAttachment")
     public CompletableFuture<ResponseEntity<EmailResponse>> sentEmailWithAttachment(@RequestParam(name = USER, required = true) String user,
-                                                                                                       @RequestParam(name = SUBJECT, required = true) String subject,
-                                                                                                       @RequestParam(name = BODY, required = true) String body,
-                                                                                                       @RequestParam(name = FILE, required = true) String file) throws MessagingException, IOException {
+                                                                                    @RequestParam(name = SUBJECT, required = true) String subject,
+                                                                                    @RequestParam(name = BODY, required = true) String body,
+                                                                                    @RequestParam(name = FILE, required = true) String file) throws MessagingException, IOException {
 
         emailResponse = emailSenderService.sendEmailWithAttachmentAsyncWrapper(user, subject, body, file, null, null);
 

@@ -43,13 +43,13 @@ class UsersControllerTestSmall {
 
     @BeforeEach
     public void setUp() {
-        user1 =  User.builder()
+        user1 = User.builder()
                 .id(1L)
                 .username(TEST_USERNAME)
                 .email(EMAIL)
                 .build();
 
-        user2 =  User.builder()
+        user2 = User.builder()
                 .id(2L)
                 .username(TEST_USERNAME)
                 .email(EMAIL_1)
@@ -60,7 +60,7 @@ class UsersControllerTestSmall {
 
     @Test
     void testGetAllUsers() {
-        UsersResponse usersResponse =  UsersResponse.builder()
+        UsersResponse usersResponse = UsersResponse.builder()
                 .status(STATUS_SUCCESS)
                 .code(HttpStatus.OK)
                 .user(users)
