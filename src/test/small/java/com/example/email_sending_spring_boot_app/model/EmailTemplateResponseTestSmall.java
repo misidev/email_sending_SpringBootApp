@@ -17,15 +17,19 @@ class EmailTemplateResponseTestSmall {
 
     @Test
     void testEmailResponse() {
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{EMAIL},
-                TEST_SUBJECT,
-                TEST_BODY,
-                TEST_FILE);
+        EmailResponse.EmailData emailData = EmailResponse.EmailData.builder()
+                .toEmail(new String[]{EMAIL})
+                .subject(TEST_SUBJECT)
+                .body(TEST_BODY)
+                .file(TEST_FILE)
+                .build();
 
-        EmailResponse emailTemplateResponse = new EmailResponse(STATUS_SUCCESS,
-                HttpStatus.valueOf(CODE_OK),
-                emailData,
-                TEST_ERROR_MESSAGE);
+        EmailResponse emailTemplateResponse = EmailResponse.builder()
+                .status(STATUS_SUCCESS)
+                .code(HttpStatus.valueOf(CODE_OK))
+                .data(emailData)
+                .message(TEST_ERROR_MESSAGE)
+                .build();
 
         assertArrayEquals(new String[]{EMAIL}, emailTemplateResponse.getData().getToEmail());
         assertEquals(TEST_SUBJECT, emailTemplateResponse.getData().getSubject());
@@ -38,16 +42,17 @@ class EmailTemplateResponseTestSmall {
 
     @Test
     void setToEmail() {
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData();
-        emailData.setToEmail(new String[]{EMAIL});
-        emailData.setSubject(TEST_SUBJECT);
-        emailData.setBody(TEST_BODY);
-        emailData.setFile(TEST_FILE);
+        EmailResponse.EmailData emailData = EmailResponse.EmailData.builder()
+                .toEmail(new String[]{EMAIL})
+                .subject(TEST_SUBJECT)
+                .body(TEST_BODY)
+                .file(TEST_FILE)
+                .build();
 
-        EmailResponse emailTemplateResponse = new EmailResponse(null,
-                null,
-                emailData,
-                null);
+        EmailResponse emailTemplateResponse = EmailResponse.builder()
+                .data(emailData)
+                .build();
+
         emailTemplateResponse.setStatus(STATUS_SUCCESS);
         emailTemplateResponse.setCode(HttpStatus.valueOf(CODE_OK));
         emailTemplateResponse.setMessage(TEST_ERROR_MESSAGE);

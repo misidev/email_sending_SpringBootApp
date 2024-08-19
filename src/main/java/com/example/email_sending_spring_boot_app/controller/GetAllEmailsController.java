@@ -1,6 +1,5 @@
 package com.example.email_sending_spring_boot_app.controller;
 
-import com.example.email_sending_spring_boot_app.constants.ApplicationConstants;
 import com.example.email_sending_spring_boot_app.model.entity.Email;
 import com.example.email_sending_spring_boot_app.repository.EmailRepository;
 import org.slf4j.Logger;
@@ -18,6 +17,7 @@ import java.util.List;
 public class GetAllEmailsController {
     private static final Logger logger = LoggerFactory.getLogger(GetAllEmailsController.class);
 
+    public static final String LOGGER_MESSAGE_GET_ALL_EMAILS = "GET REQUEST for get all emails.";
     @Autowired
     EmailRepository emailRepository;
 
@@ -26,7 +26,7 @@ public class GetAllEmailsController {
         try {
             List<Email> emails = emailRepository.findAll();
 
-            logger.info(ApplicationConstants.LOGGER_MESSAGE_GET_ALL_EMAILS);
+            logger.info(LOGGER_MESSAGE_GET_ALL_EMAILS);
             return ResponseEntity.ok(emails);
         } catch (Exception e) {
             return ResponseEntity.status(500).build();

@@ -5,6 +5,7 @@ import com.example.email_sending_spring_boot_app.model.response.UserResponse;
 import com.example.email_sending_spring_boot_app.model.response.UsersResponse;
 import com.example.email_sending_spring_boot_app.repository.UserRepository;
 import com.example.email_sending_spring_boot_app.util.HandleDbInputAndResponses;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class UsersController {
     private HandleDbInputAndResponses handleDbInputAndResponses;
 
     @PostMapping("/add")
-    public ResponseEntity<UserResponse> addUser(@RequestBody User user) {
+    public ResponseEntity<UserResponse> addUser(@Valid @RequestBody User user) {
         User savedUser = userRepository.save(user);
 
         LOGGER.info(LOGGER_MESSAGE_ADD_USER);

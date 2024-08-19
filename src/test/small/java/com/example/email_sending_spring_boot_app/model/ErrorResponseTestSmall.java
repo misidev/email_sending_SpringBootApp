@@ -13,12 +13,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ErrorResponseTestSmall {
     @Test
     void testEmailConstructorAndGetters() {
-        ErrorResponse.Error error = new ErrorResponse.Error(STATUS_SUCCESS,
-                CODE_OK,
-                TEST_ERROR_MESSAGE,
-                TEST_DETAILS);
+        ErrorResponse.Error error =  ErrorResponse.Error.builder()
+                .status(STATUS_SUCCESS)
+                .code(CODE_OK)
+                .message(TEST_ERROR_MESSAGE)
+                .details(TEST_DETAILS)
+                .build();
 
-        ErrorResponse errorResponse = new ErrorResponse(error);
+        ErrorResponse errorResponse = ErrorResponse.builder().error(error).build();
 
         assertEquals(STATUS_SUCCESS, errorResponse.getError().getStatus());
         assertEquals(CODE_OK, errorResponse.getError().getCode());
@@ -28,13 +30,13 @@ class ErrorResponseTestSmall {
 
     @Test
     void testSetters() {
-        ErrorResponse.Error error = new ErrorResponse.Error(null, null, null, null);
+        ErrorResponse.Error error = ErrorResponse.Error.builder().build();
         error.setStatus(STATUS_SUCCESS);
         error.setCode(CODE_OK);
         error.setMessage(TEST_ERROR_MESSAGE);
         error.setDetails(TEST_DETAILS);
 
-        ErrorResponse errorResponse = new ErrorResponse(null);
+        ErrorResponse errorResponse = ErrorResponse.builder().build();
         errorResponse.setError(error);
 
         assertEquals(STATUS_SUCCESS, errorResponse.getError().getStatus());

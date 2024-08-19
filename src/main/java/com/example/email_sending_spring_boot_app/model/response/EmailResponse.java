@@ -3,13 +3,12 @@ package com.example.email_sending_spring_boot_app.model.response;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 
-import java.util.Arrays;
-
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class EmailResponse {
     private String status;
     private HttpStatus code;
@@ -21,6 +20,7 @@ public class EmailResponse {
     @ToString
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     public static class EmailData {
         String[] toEmail;
         String subject;

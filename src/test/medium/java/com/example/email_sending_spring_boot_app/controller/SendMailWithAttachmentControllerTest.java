@@ -10,14 +10,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.*;
 import static com.example.email_sending_spring_boot_app.constants.TestConstants.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -35,23 +36,32 @@ class SendMailWithAttachmentControllerTest {
     void testSentEmailMultipartFile() throws Exception {
         MockMultipartFile attachment = new MockMultipartFile("attachments", "test.txt", "text/plain", "Attachment Content".getBytes());
 
-        mockMvc.perform(multipart("/api/v1/mail/sendEmail")
+        MvcResult mvcResult = mockMvc.perform(multipart("/api/v1/mail/sendEmail")
                         .file(attachment)
                         .param(USER, EMAIL)
                         .param(SUBJECT, TEST_SUBJECT)
                         .param(BODY, TEST_BODY))
-                .andExpect(status().isOk());
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"status\":\"success\",\"code\":\"OK\",\"data\":{\"toEmail\":[\"[testserviceuser888@yahoo.com]\"],\"subject\":\"Test subject\",\"body\":\"Test body\",\"file\":\"test.txt\"},\"message\":\"POST REQUEST email with attachment.\"}"));
     }
 
     @Test
     void testSentEmailWithAttachment() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/mail/sendEmailWithAttachment")
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/mail/sendEmailWithAttachment")
                         .param(USER, EMAIL)
                         .param(SUBJECT, SUBJECT_FOR_MAIL_WITH_ATTACHMENT)
                         .param(BODY, BODY_FOR_MAIL_WITH_ATTACHMENT)
                         .param(FILE, FILE_FOR_MAIL_WITH_ATTACHMENT)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
+                .andExpect(request().asyncStarted())  // Proverava da je asinkroni proces započet
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(mvcResult))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(content().string(TEST_EMAIL_WITH_ATTACHMENT));
     }

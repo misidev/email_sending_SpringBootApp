@@ -16,9 +16,11 @@ class UserTestSmall {
 
     @Test
     void testUserConstructorAndGetters() {
-        User user = new User(TEST_ID,
-                TEST_USERNAME,
-                EMAIL);
+        User user = User.builder()
+                .id(TEST_ID)
+                .username(TEST_USERNAME)
+                .email(EMAIL)
+                .build();
 
         assertEquals(TEST_ID, user.getId());
         assertEquals(TEST_USERNAME, user.getUsername());
@@ -27,7 +29,7 @@ class UserTestSmall {
 
     @Test
     void testUserSetters() {
-        User user = new User(null, null, null);
+        User user = User.builder().build();
         user.setId(TEST_ID);
         user.setUsername(TEST_USERNAME);
         user.setEmail(EMAIL);

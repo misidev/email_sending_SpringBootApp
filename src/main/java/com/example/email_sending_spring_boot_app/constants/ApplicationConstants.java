@@ -1,12 +1,11 @@
 package com.example.email_sending_spring_boot_app.constants;
 
-import java.time.LocalDateTime;
-
 public class ApplicationConstants {
 
     private ApplicationConstants() {
         throw new AssertionError();
     }
+
     public static final String EMAIL = "testserviceuser888@yahoo.com";
     public static final String EMAIL_1 = "test.service.user888@gmail.com";
     public static final String FILE_FOR_MAIL_WITH_ATTACHMENT = "src/main/resources/images/misidev_logo.png";
@@ -16,36 +15,29 @@ public class ApplicationConstants {
     public static final String SUBJECT_FOR_SIMPLE_MAIL = "User notification";
     public static final String BODY_FOR_SIMPLE_MAIL = "Post request for user is triggered!";
     public static final String LOGGER_MESSAGE_FOR_SIMPLE_MAIL = "POST REQUEST simple email.";
-    public static final String LOGGER_MESSAGE_GET_ALL_EMAILS = "GET REQUEST for get all emails.";
+
     public static final String LOGGER_MESSAGE_GET_ALL_USERS = "GET REQUEST for get all users.";
     public static final String LOGGER_MESSAGE_ADD_USER = "POST REQUEST for add user.";
     public static final String APP_STARTING_SUBJECT = "App is started";
     public static final String APP_SHUTDOWN_SUBJECT = "App is shutting down!";
-    public static final String APP_STARTING_STATUS = "successfully started";
-    public static final String APP_SHUTDOWN_STATUS = "shut down";
     public static final String APP_STARTING_BODY = "App is successfully started!";
     public static final String APP_SHUTDOWN_BODY = "Shutdown of the app started!";
     public static final String APP_STARTING = "Email to notify that the application has started running";
     public static final String APP_SHUTDOWN = "Email to notify that the application has started to shut down";
     public static final String STATUS_SUCCESS = "success";
     public static final String STATUS_FAILURE = "failure";
-    public static final String DESCRIPTION_APP_STARTING = "This email confirms that everything is up and running smoothly.";
-    public static final String DESCRIPTION_APP_SHUTDOWN = "This email confirms that service is stopped running.";
     public static final String STATUS_UP = "UP";
     public static final String STATUS_SHUTDOWN = "SHUTDOWN";
     public static final String MESSAGE_UNAUTHORIZED = "Unauthorized";
     public static final String MESSAGE_INTERNAL_SERVER_ERROR = "Internal Server Error";
     public static final String MESSAGE_NOT_FOUND = "Not Found";
-    public static final String MESSAGE_SERVICE_UNAVAILABLE = "Service Unavailable";
     public static final String MESSAGE_BAD_REQUEST = "Bad Request";
-    public static final String DETAILS_SERVICE_UNAVAILABLE = "The server is currently unable to handle the request due to temporary " +
-            "overloading or maintenance of the server, caused by exception: ";
+
     public static final String DETAILS_BAD_REQUEST = "The request to prepare the email message was malformed or invalid, caused by exception: ";
     public static final String DETAILS_INTERNAL_SERVER_ERROR = "An unexpected error occurred while processing your request, caused by exception: ";
     public static final String DETAILS_NOT_FOUND = "An unexpected error occurred while interacting with DB, caused by exception: ";
     public static final String DETAILS_UNAUTHORIZED = "You are not authorized to access this resource, caused by exception: ";
     public static final String TEMPLATE_START_SHUTDOWN = "email_app_status.html";
-    public static final String TEMPLATE_EMAIL = "email_template.html";
     public static final String USER = "user";
     public static final String SUBJECT = "subject";
     public static final String BODY = "body";

@@ -37,19 +37,23 @@ class GetAllEmailsTestSmall {
 
     @Test
     void testGetAllUsers() {
-        Email email1 = new Email(TEST_ID,
-                EMAIL_1,
-                EMAIL,
-                TEST_SUBJECT,
-                TEST_BODY,
-                TEST_TIMESTAMP);
+        Email email1 = Email.builder()
+                .id(TEST_ID)
+                .sender(EMAIL_1)
+                .recipient(EMAIL)
+                .subject(TEST_SUBJECT)
+                .body(TEST_BODY)
+                .timestamp(TEST_TIMESTAMP)
+                .build();
 
-        Email email2 = new Email(TEST_ID_2,
-                EMAIL,
-                EMAIL_1,
-                TEST_SUBJECT,
-                TEST_BODY,
-                TEST_TIMESTAMP);
+        Email email2 = Email.builder()
+                .id(TEST_ID_2)
+                .sender(EMAIL)
+                .recipient(EMAIL_1)
+                .subject(TEST_SUBJECT)
+                .body(TEST_BODY)
+                .timestamp(TEST_TIMESTAMP)
+                .build();
 
         when(emailRepository.findAll()).thenReturn(Arrays.asList(email1, email2));
 

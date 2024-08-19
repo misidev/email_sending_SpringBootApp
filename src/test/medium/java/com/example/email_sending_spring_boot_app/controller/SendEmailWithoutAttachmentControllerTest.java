@@ -11,11 +11,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.EMAIL;
 import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.USER;
+import static com.example.email_sending_spring_boot_app.constants.TestConstants.TEST_EMAIL_WITHOUT_ATTACHMENT;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -37,11 +42,16 @@ class SendEmailWithoutAttachmentControllerTest {
 
     @Test
     void testSentEmailWithoutAttachment() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/mail/sendEmailWithoutAttachment")
+        MvcResult mvcResult = mockMvc.perform(post("/api/v1/mail/sendEmailWithoutAttachment")
                         .param(USER, EMAIL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(content().string(TEST_EMAIL_WITHOUT_ATTACHMENT));
     }
 
 }

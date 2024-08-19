@@ -1,5 +1,6 @@
 package com.example.email_sending_spring_boot_app.impl;
 
+import com.example.email_sending_spring_boot_app.exception.UsernameNotFoundException;
 import com.example.email_sending_spring_boot_app.model.entity.User;
 import com.example.email_sending_spring_boot_app.repository.UserRepository;
 import com.example.email_sending_spring_boot_app.service.UsersService;
@@ -19,8 +20,9 @@ public class UserServiceImpl implements UsersService {
         return userRepository.findAll();
     }
 
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
 
 }

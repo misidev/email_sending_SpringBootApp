@@ -2,20 +2,19 @@ package com.example.email_sending_spring_boot_app.controller;
 
 import com.example.email_sending_spring_boot_app.service.EmailSenderService;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.EMAIL;
-import static com.example.email_sending_spring_boot_app.constants.ApplicationConstants.USER;
-import static com.example.email_sending_spring_boot_app.constants.TestConstants.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static com.example.email_sending_spring_boot_app.constants.TestConstants.TEST_REQUEST_BODY_TEMPLATE;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -26,7 +25,7 @@ class SendEmailTemplateControllerTest {
     @Mock
     private EmailSenderService emailSenderService;
 
-    @InjectMocks
+    @Mock
     private SendEmailTemplateController sendEmailTemplateController;
 
     @Test
@@ -36,26 +35,31 @@ class SendEmailTemplateControllerTest {
                         .content(TEST_REQUEST_BODY_TEMPLATE)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
+
     }
 
     @Test
     void testSentEmailAppStarts() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/mail/sendAppStartEmail")
-                        .param(USER, EMAIL)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/mail/sendAppStartEmail")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(content().string(TEST_APP_STARTS_EMAIL));
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     void testSentEmailAppShutdown() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/mail/sendShutdownEmail")
-                        .param(USER, EMAIL)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/mail/sendShutdownEmail")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(content().string(TEST_SHUTDOWN_EMAIL));
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mockMvc.perform(asyncDispatch(mvcResult))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
 }

@@ -39,14 +39,20 @@ public class HandleDbInputAndResponses {
 
     private EmailResponse emailResponse = null;
 
+    public static final String DETAILS_SERVICE_UNAVAILABLE = "The server is currently unable to handle the request due to temporary " +
+            "overloading or maintenance of the server, caused by exception: ";
+
+    public static final String MESSAGE_SERVICE_UNAVAILABLE = "Service Unavailable";
+
+
     public Email addingEmail(String subject, String body, String recipient, String sender, LocalDateTime timestamp) {
-        Email email = new Email();
-        email.setSubject(subject);
-        email.setBody(body);
-        email.setRecipient(recipient);
-        email.setSender(sender);
-        email.setTimestamp(timestamp);
-        return email;
+        return Email.builder()
+                .subject(subject)
+                .body(body)
+                .recipient(recipient)
+                .sender(sender)
+                .timestamp(timestamp)
+                .build();
     }
 
     public void saveEmails(String[] toEmail, String subject, String body, String sender) {
@@ -76,6 +82,7 @@ public class HandleDbInputAndResponses {
 
     }
 
+    //generation of .pdf file describing the status of the service(UP,DOWN) for e-mail attachments
     public String generatePdf(String appName, String appId, String status, String date, String environment) throws DocumentException, IOException {
         String listClosingTag = "</li>\n";
         String htmlContent = "<html><body><h1>Application status:</h1>\n" +
@@ -106,15 +113,100 @@ public class HandleDbInputAndResponses {
         return filePdf;
     }
 
+    //handle success(200 OK) - sending simple email without attachment
+    public EmailResponse handleSuccessResponseSimple(String user) {
+        EmailResponse.EmailData emailData = EmailResponse.EmailData.builder()
+                .toEmail(new String[]{user})
+                .subject(SUBJECT_FOR_SIMPLE_MAIL)
+                .body(BODY_FOR_SIMPLE_MAIL)
+                .file(null)
+                .build();
+
+        emailResponse = EmailResponse.builder()
+                .status(STATUS_SUCCESS)
+                .code(HttpStatus.OK)
+                .data(emailData)
+                .message(LOGGER_MESSAGE_FOR_SIMPLE_MAIL)
+                .build();
+
+        LOGGER.info("Email response for /sendEmailWithoutAttachment endpoint - 200 OK: {}", emailResponse);
+        return emailResponse;
+    }
+
+
+    public EmailResponse handleSuccessResponseAttachment(String user, String subject, String body, String file) {
+        EmailResponse.EmailData emailData = EmailResponse.EmailData.builder()
+                .toEmail(new String[]{user})
+                .subject(subject)
+                .body(body)
+                .file(file)
+                .build();
+
+        emailResponse = EmailResponse.builder()
+                .status(STATUS_SUCCESS)
+                .code(HttpStatus.OK)
+                .data(emailData)
+                .message(LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT)
+                .build();
+
+        LOGGER.info("Email response for /sendEmailWithAttachment endpoint - 200 OK: {}", emailResponse);
+        return emailResponse;
+    }
+
+
+    public EmailResponse handleSuccessResponseMultipartFile(String user, String subject, String body, MultipartFile attachments) {
+        EmailResponse.EmailData emailData = EmailResponse.EmailData.builder()
+                .toEmail(new String[]{user})
+                .subject(subject)
+                .body(body)
+                .file(attachments.getOriginalFilename())
+                .build();
+
+        emailResponse = EmailResponse.builder()
+                .status(STATUS_SUCCESS)
+                .code(HttpStatus.OK)
+                .data(emailData)
+                .message(LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT)
+                .build();
+
+        LOGGER.info("Email response for /sendEmail endpoint - 200 OK: {}", emailResponse);
+        return emailResponse;
+    }
+
+    public UserResponse handleSuccessResponseAddUser(User user) {
+        UserResponse userResponse = UserResponse.builder()
+                .status(STATUS_SUCCESS)
+                .code(HttpStatus.OK)
+                .user(user)
+                .message(LOGGER_MESSAGE_ADD_USER)
+                .build();
+
+        LOGGER.info("Email response for /add endpoint - 200 OK: {}", userResponse);
+        return userResponse;
+    }
+
+    public UsersResponse handleSuccessResponseGetUsers(List<User> users) {
+        UsersResponse usersResponse = UsersResponse.builder()
+                .status(STATUS_SUCCESS)
+                .code(HttpStatus.OK)
+                .user(users)
+                .message(LOGGER_MESSAGE_GET_ALL_USERS)
+                .build();
+
+        LOGGER.info("Email response for /add endpoint - 200 OK: {}", usersResponse);
+        return usersResponse;
+    }
+
     // Handle authentication failure
     public ErrorResponse handleUnauthorized(String exception) {
-        ErrorResponse.Error error = new ErrorResponse.Error(
-                STATUS_FAILURE,
-                HttpServletResponse.SC_UNAUTHORIZED,
-                MESSAGE_UNAUTHORIZED,
-                DETAILS_UNAUTHORIZED + exception);
+        ErrorResponse.Error error = ErrorResponse.Error.builder()
+                .status(STATUS_FAILURE)
+                .code(HttpServletResponse.SC_UNAUTHORIZED)
+                .message(MESSAGE_UNAUTHORIZED)
+                .details(DETAILS_UNAUTHORIZED + exception)
+                .build();
 
-        errorResponse = new ErrorResponse(error);
+        errorResponse = ErrorResponse.builder().error(error).build();
 
         LOGGER.info("Error response for 401 Unauthorized: {}", errorResponse);
         return errorResponse;
@@ -122,13 +214,14 @@ public class HandleDbInputAndResponses {
 
     // Handle other messaging exceptions
     public ErrorResponse handleInternalServerError(String exception) {
-        ErrorResponse.Error error = new ErrorResponse.Error(
-                STATUS_FAILURE,
-                HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                MESSAGE_INTERNAL_SERVER_ERROR,
-                DETAILS_INTERNAL_SERVER_ERROR + exception);
+        ErrorResponse.Error error = ErrorResponse.Error.builder()
+                .status(STATUS_FAILURE)
+                .code(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+                .message(MESSAGE_INTERNAL_SERVER_ERROR)
+                .details(DETAILS_INTERNAL_SERVER_ERROR + exception)
+                .build();
 
-        errorResponse = new ErrorResponse(error);
+        errorResponse = ErrorResponse.builder().error(error).build();
 
         LOGGER.info("Error response for 500 Internal Server Error: {}", errorResponse);
         return errorResponse;
@@ -136,26 +229,28 @@ public class HandleDbInputAndResponses {
 
     // user not found in DB
     public ErrorResponse handleUsernameNotFound(String exception) {
-        ErrorResponse.Error error = new ErrorResponse.Error(
-                STATUS_FAILURE,
-                HttpServletResponse.SC_NOT_FOUND,
-                MESSAGE_NOT_FOUND,
-                DETAILS_NOT_FOUND + exception);
+        ErrorResponse.Error error = ErrorResponse.Error.builder()
+                .status(STATUS_FAILURE)
+                .code(HttpServletResponse.SC_NOT_FOUND)
+                .message(MESSAGE_NOT_FOUND)
+                .details(DETAILS_NOT_FOUND + exception)
+                .build();
 
-        errorResponse = new ErrorResponse(error);
+        errorResponse = ErrorResponse.builder().error(error).build();
 
         LOGGER.info("Error response for 404 Not Found: {}", errorResponse);
         return errorResponse;
     }
 
     public ErrorResponse handleServiceUnavailable(String exception) {
-        ErrorResponse.Error error = new ErrorResponse.Error(
-                STATUS_FAILURE,
-                HttpServletResponse.SC_SERVICE_UNAVAILABLE,
-                MESSAGE_SERVICE_UNAVAILABLE,
-                DETAILS_SERVICE_UNAVAILABLE + exception);
+        ErrorResponse.Error error = ErrorResponse.Error.builder()
+                .status(STATUS_FAILURE)
+                .code(HttpServletResponse.SC_SERVICE_UNAVAILABLE)
+                .message(MESSAGE_SERVICE_UNAVAILABLE)
+                .details(DETAILS_SERVICE_UNAVAILABLE + exception)
+                .build();
 
-        errorResponse = new ErrorResponse(error);
+        errorResponse = ErrorResponse.builder().error(error).build();
 
         LOGGER.info("Error response for 503 Service Unavailable: {}", errorResponse);
         return errorResponse;
@@ -163,13 +258,14 @@ public class HandleDbInputAndResponses {
 
     //bad request
     public ErrorResponse handleBadRequest(String exception) {
-        ErrorResponse.Error error = new ErrorResponse.Error(
-                STATUS_FAILURE,
-                HttpServletResponse.SC_BAD_REQUEST,
-                MESSAGE_BAD_REQUEST,
-                DETAILS_BAD_REQUEST + exception);
+        ErrorResponse.Error error = ErrorResponse.Error.builder()
+                .status(STATUS_FAILURE)
+                .code(HttpServletResponse.SC_BAD_REQUEST)
+                .message(MESSAGE_BAD_REQUEST)
+                .details(DETAILS_BAD_REQUEST + exception)
+                .build();
 
-        errorResponse = new ErrorResponse(error);
+        errorResponse = ErrorResponse.builder().error(error).build();
 
         LOGGER.info("Error response for 400 Bad Request: {}", errorResponse);
         return errorResponse;
@@ -177,99 +273,42 @@ public class HandleDbInputAndResponses {
 
     //handle bad request, bad input of params for request
     public EmailResponse handleSuccessResponseAppStarts() {
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData(EMAIL_LIST,
-                APP_STARTING_SUBJECT,
-                APP_STARTING_BODY,
-                SIGNATURE);
+        EmailResponse.EmailData emailData = EmailResponse.EmailData.builder()
+                .toEmail(EMAIL_LIST)
+                .subject(APP_STARTING_SUBJECT)
+                .body(APP_STARTING_BODY)
+                .file(SIGNATURE)
+                .build();
 
-        emailResponse = new EmailResponse(
-                STATUS_SUCCESS,
-                HttpStatus.OK,
-                emailData,
-                APP_STARTING);
+        emailResponse = EmailResponse.builder()
+                .status(STATUS_SUCCESS)
+                .code(HttpStatus.OK)
+                .data(emailData)
+                .message(APP_STARTING)
+                .build();
 
         LOGGER.info("Email response for /sendAppStartEmail endpoint - 200 OK: {}", emailResponse);
         return emailResponse;
     }
 
     public EmailResponse handleSuccessResponseShutdown() {
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData(EMAIL_LIST,
-                APP_SHUTDOWN_SUBJECT,
-                APP_SHUTDOWN_BODY,
-                SIGNATURE);
+        EmailResponse.EmailData emailData = EmailResponse.EmailData.builder()
+                .toEmail(EMAIL_LIST)
+                .subject(APP_SHUTDOWN_SUBJECT)
+                .body(APP_SHUTDOWN_BODY)
+                .file(SIGNATURE)
+                .build();
 
-        emailResponse = new EmailResponse(
-                ApplicationConstants.STATUS_SUCCESS,
-                HttpStatus.OK,
-                emailData,
-                ApplicationConstants.APP_SHUTDOWN);
+        emailResponse = EmailResponse.builder()
+                .status(STATUS_SUCCESS)
+                .code(HttpStatus.OK)
+                .data(emailData)
+                .message(ApplicationConstants.APP_SHUTDOWN)
+                .build();
 
         LOGGER.info("Email response for /sendShutdownEmail endpoint - 200 OK: {}", emailResponse);
         return emailResponse;
     }
 
-    public EmailResponse handleSuccessResponseAttachment(String user, String subject, String body, String file) {
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{user}, subject, body, file);
-
-        emailResponse = new EmailResponse(
-                STATUS_SUCCESS,
-                HttpStatus.OK,
-                emailData,
-                LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
-
-        LOGGER.info("Email response for /sendEmailWithAttachment endpoint - 200 OK: {}", emailResponse);
-        return emailResponse;
-    }
-
-    public EmailResponse handleSuccessResponseSimple(String user) {
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{user},
-                SUBJECT_FOR_SIMPLE_MAIL,
-                BODY_FOR_SIMPLE_MAIL,null);
-
-        emailResponse = new EmailResponse(
-                STATUS_SUCCESS,
-                HttpStatus.OK,
-                emailData,
-                LOGGER_MESSAGE_FOR_SIMPLE_MAIL);
-
-        LOGGER.info("Email response for /sendEmailWithoutAttachment endpoint - 200 OK: {}", emailResponse);
-        return emailResponse;
-    }
-
-    public EmailResponse handleSuccessResponseMultipartFile(String user, String subject, String body, MultipartFile attachments) {
-        EmailResponse.EmailData emailData = new EmailResponse.EmailData(new String[]{user},
-                subject,
-                body,
-                attachments.getOriginalFilename());
-
-        emailResponse = new EmailResponse(
-                STATUS_SUCCESS,
-                HttpStatus.OK,
-                emailData,
-                LOGGER_MESSAGE_FOR_MAIL_WITH_ATTACHMENT);
-
-        LOGGER.info("Email response for /sendEmail endpoint - 200 OK: {}", emailResponse);
-        return emailResponse;
-    }
-
-    public UserResponse handleSuccessResponseAddUser(User user) {
-        UserResponse userResponse = new UserResponse(STATUS_SUCCESS,
-                HttpStatus.OK,
-                user,
-                LOGGER_MESSAGE_ADD_USER);
-
-        LOGGER.info("Email response for /add endpoint - 200 OK: {}", userResponse);
-        return userResponse;
-    }
-
-    public UsersResponse handleSuccessResponseGetUsers(List<User> users) {
-        UsersResponse usersResponse = new UsersResponse(STATUS_SUCCESS,
-                HttpStatus.OK,
-                users,
-                LOGGER_MESSAGE_GET_ALL_USERS);
-
-        LOGGER.info("Email response for /add endpoint - 200 OK: {}", usersResponse);
-        return usersResponse;
-    }
 
 }

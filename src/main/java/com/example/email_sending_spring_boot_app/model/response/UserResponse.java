@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserResponse {
 
     private String status;
